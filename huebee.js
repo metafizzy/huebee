@@ -25,7 +25,7 @@ proto.option = function( options ) {
 var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.create = function() {
-  this.input.addEventListener( 'focus', this.onInputFocus.bind( this ) );
+  this.input.addEventListener( 'focus', this.open.bind( this ) );
   // create element
   this.element = document.createElement('div');
   this.element.className = 'huebee';
@@ -33,7 +33,7 @@ proto.create = function() {
   this.canvas = document.createElement('canvas');
   this.ctx = this.canvas.getContext('2d');
   this.canvas.className = 'huebee__canvas';
-  this.canvas.width = this.options.gridSize * 15;
+  this.canvas.width = this.options.gridSize * 14;
   this.canvas.height = this.options.gridSize * 15;
   this.renderColors();
 
@@ -52,7 +52,10 @@ proto.create = function() {
   path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7, L 7,17' );
   path.setAttribute( 'class', 'huebee__close-button__x' );
   svg.appendChild( path );
+  svg.addEventListener( 'click', this.close.bind( this ) );
   this.element.appendChild( svg );
+
+  this.onDocPointerDown = this.docPointerDown.bind( this );
 };
 
 proto.renderColors = function() {
@@ -73,7 +76,7 @@ proto.renderColors = function() {
   for ( var i=0; i<7; i++ ) {
     var lum = 1 - i/6;
     this.ctx.fillStyle = moder( 0, 0, lum );
-    this.ctx.fillRect( gridSize * 13, i * grayGridSize, grayGridSize, grayGridSize );
+    this.ctx.fillRect( gridSize * 13, i * gridSize, gridSize, gridSize );
   }
 
 };
@@ -116,13 +119,34 @@ proto.getColorModer = function() {
 
 // ----- events ----- //
 
-proto.onInputFocus = function() {
+proto.open = function() {
+  if ( this.isOpen ) {
+    return;
+  }
   var boundingRect = this.input.getBoundingClientRect();
   this.element.style.left = boundingRect.left + 'px';
   this.element.style.top = boundingRect.top + this.input.offsetHeight + 5 + 'px';
-  // console.log('focus');
+  document.documentElement.addEventListener( 'mousedown', this.onDocPointerDown );
+  document.documentElement.addEventListener( 'touchstart', this.onDocPointerDown );
   // add canvas to DOM
   this.input.parentNode.insertBefore( this.element, this.input.nextSibling );
+  this.isOpen = true;
+};
+
+proto.docPointerDown = function( event ) {
+  if ( !this.element.contains( event.target ) && event.target != this.input ) {
+    this.close();
+  }
+};
+
+proto.close = function() {
+  if ( !this.isOpen ) {
+    return;
+  }
+  this.element.parentNode.removeChild( this.element );
+  document.documentElement.removeEventListener( 'mousedown', this.onDocPointerDown );
+  document.documentElement.removeEventListener( 'touchstart', this.onDocPointerDown );
+  this.isOpen = false;
 };
 
 // ----- canvas pointer ----- //
@@ -145,7 +169,7 @@ proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
   var size = this.options.gridSize;
-  x = Math.max( 0, Math.min( x, size * 15 ) );
+  x = Math.max( 0, Math.min( x, size * 14 ) );
   y = Math.max( 0, Math.min( y, size * 14 ) );
   var hue, sat, lum;
   if ( x <= size * 12 ) {
@@ -153,11 +177,11 @@ proto.canvasPointerChange = function( pointer ) {
     hue = Math.floor( x / size ) * 30;
     sat = 1 - Math.floor( Math.floor( y / size ) / 5 ) / 3;
     lum = 1 - ( Math.floor( y / size ) % 5 / 6 + 1/6 );
-  } else if ( x >= size * 13 & y < size * 14 ) {
+  } else if ( x >= size * 13 & y < size * 7 ) {
     // grays
     hue = 0;
     sat = 0;
-    lum = 1 - ( Math.floor( y / (size * 2 )) / 6 );
+    lum = 1 - ( Math.floor( y / size ) / 6 );
   } else {
     return;
   }
