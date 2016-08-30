@@ -1,12 +1,23 @@
+.huebee, .huebee * { box-sizing: border-box; }
+
 .huebee {
   position: absolute;
   padding: 10px;
   background: #EEE;
   border-radius: 5px;
+  box-shadow: 0 5px 10px hsla(0, 0%, 0%, 0.3);
 }
 
 .huebee__canvas {
   display: block;
+  cursor: pointer;
+}
+
+.huebee__selector {
+  position: absolute;
+  border-color: white;
+  border-style: solid;
+  border-radius: 5px;
 }
 
 .huebee__close-button {
@@ -24,4 +35,13 @@
   stroke: white;
   stroke-width: 3;
   stroke-linecap: round;
+}
+
+.huebee__close-button:hover {
+  background: white;
+  cursor: pointer;
+}
+
+.huebee__close-button:hover .huebee__close-button__x {
+  stroke: #222;
 }

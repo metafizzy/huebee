@@ -8,6 +8,21 @@
 
 <link rel="stylesheet" href="../huebee.css" />
 
+<style>
+  
+body, input {
+  font-size: 20px;
+}
+
+.color-button {
+  display: inline-block;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  background: #EEE;
+}
+</style>
+
 </head>
 <body>
 
@@ -15,6 +30,7 @@
 
 <input class="color-input1" />
 <input class="color-input2" />
+<span class="color-button color-button1"></span>
 
 <script src="../bower_components/ev-emitter/ev-emitter.js"></script>
 <script src="../bower_components/unipointer/unipointer.js"></script>
@@ -24,10 +40,23 @@
 var colorInput1 = document.querySelector('.color-input1');
 var hueb = new Huebee( colorInput1, {
   mode: 'roundHex',
+  // setBGColor: true,
+  // gridSize: 20,
+  // selectorBorder: 5,
 });
 hueb.on( 'change', function( color ) {
   document.body.style.backgroundColor = color;
 });
+
+new Huebee( document.querySelector('.color-input2'), {
+  mode: 'roundHex',
+  setBGColor: true,
+})
+
+new Huebee( document.querySelector('.color-button1'), {
+  mode: 'roundHex',
+  setBGColor: true,
+})
 </script>
 
 </body>

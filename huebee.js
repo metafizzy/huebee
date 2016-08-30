@@ -1,8 +1,8 @@
 /*jshint browser: true, unused: true, undef: true */
 /*globals Unipointer, EvEmitter */
 
-function Huebee( input, options ) {
-  this.input = input;
+function Huebee( anchor, options ) {
+  this.anchor = anchor;
   // options
   this.options = {};
   this.option( Huebee.defaults );
@@ -14,6 +14,9 @@ function Huebee( input, options ) {
 Huebee.defaults = {
   gridSize: 15,
   mode: 'hsl',
+  selectorBorder: 3,
+  setText: true,
+  setBGColor: false,
 };
 
 var proto = Huebee.prototype = Object.create( EvEmitter.prototype );
@@ -25,7 +28,13 @@ proto.option = function( options ) {
 var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.create = function() {
-  this.input.addEventListener( 'focus', this.open.bind( this ) );
+  var gridSize = this.options.gridSize;
+  // open events
+  this.isInputAnchor = this.anchor.nodeName == 'INPUT';
+  this.anchor.addEventListener( 'click', this.open.bind( this ) );
+  if ( this.isInputAnchor ) {
+    this.anchor.addEventListener( 'focus', this.open.bind( this ) );
+  }
   // create element
   this.element = document.createElement('div');
   this.element.className = 'huebee';
@@ -33,18 +42,23 @@ proto.create = function() {
   this.canvas = document.createElement('canvas');
   this.ctx = this.canvas.getContext('2d');
   this.canvas.className = 'huebee__canvas';
-  this.canvas.width = this.options.gridSize * 14;
-  this.canvas.height = this.options.gridSize * 15;
+  this.canvas.width = gridSize * 14;
+  this.canvas.height = gridSize * 15;
   this.renderColors();
-
+  // canvas pointer events
   var canvasPointer = this.canvasPointer = new Unipointer();
   canvasPointer._bindStartEvent( this.canvas );
   canvasPointer.on( 'pointerDown', this.canvasPointerDown.bind( this ) );
   canvasPointer.on( 'pointerMove', this.canvasPointerMove.bind( this ) );
   this.element.appendChild( this.canvas );
-
+  // create selection
+  this.selector = document.createElement('div');
+  this.selector.className = 'huebee__selector';
+  var selectorSize = gridSize + this.options.selectorBorder*2 + 'px';
+  this.selector.style.width = this.selector.style.height = selectorSize;
+  this.selector.style.borderWidth = this.options.selectorBorder + 'px';
+  this.element.appendChild( this.selector );
   // create close button
-
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
@@ -71,7 +85,6 @@ proto.renderColors = function() {
   this.renderColorGrid( 0.33 );
   ctx.restore();
   // grays
-  var grayGridSize = gridSize * 2;
   var moder = this.getColorModer();
   for ( var i=0; i<7; i++ ) {
     var lum = 1 - i/6;
@@ -119,22 +132,29 @@ proto.getColorModer = function() {
 
 // ----- events ----- //
 
+var docElem = document.documentElement;
+
 proto.open = function() {
   if ( this.isOpen ) {
     return;
   }
-  var boundingRect = this.input.getBoundingClientRect();
+  var boundingRect = this.anchor.getBoundingClientRect();
   this.element.style.left = boundingRect.left + 'px';
-  this.element.style.top = boundingRect.top + this.input.offsetHeight + 5 + 'px';
-  document.documentElement.addEventListener( 'mousedown', this.onDocPointerDown );
-  document.documentElement.addEventListener( 'touchstart', this.onDocPointerDown );
+  this.element.style.top = boundingRect.top + this.anchor.offsetHeight + 5 + 'px';
+  docElem.addEventListener( 'mousedown', this.onDocPointerDown );
+  docElem.addEventListener( 'touchstart', this.onDocPointerDown );
   // add canvas to DOM
-  this.input.parentNode.insertBefore( this.element, this.input.nextSibling );
+  this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
+  this.canvasOffset = {
+    x: this.canvas.offsetLeft,
+    y: this.canvas.offsetTop,
+  };
+
   this.isOpen = true;
 };
 
 proto.docPointerDown = function( event ) {
-  if ( !this.element.contains( event.target ) && event.target != this.input ) {
+  if ( !this.element.contains( event.target ) && event.target != this.anchor ) {
     this.close();
   }
 };
@@ -144,8 +164,8 @@ proto.close = function() {
     return;
   }
   this.element.parentNode.removeChild( this.element );
-  document.documentElement.removeEventListener( 'mousedown', this.onDocPointerDown );
-  document.documentElement.removeEventListener( 'touchstart', this.onDocPointerDown );
+  docElem.removeEventListener( 'mousedown', this.onDocPointerDown );
+  docElem.removeEventListener( 'touchstart', this.onDocPointerDown );
   this.isOpen = false;
 };
 
@@ -169,33 +189,55 @@ proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
   var size = this.options.gridSize;
-  x = Math.max( 0, Math.min( x, size * 14 ) );
+  x = Math.max( 0, Math.min( x, size * 13 ) );
   y = Math.max( 0, Math.min( y, size * 14 ) );
+  var sx = Math.floor( x / size );
+  var sy = Math.floor( y / size );
   var hue, sat, lum;
-  if ( x <= size * 12 ) {
+  if ( x < size * 12 ) {
     // colors
-    hue = Math.floor( x / size ) * 30;
-    sat = 1 - Math.floor( Math.floor( y / size ) / 5 ) / 3;
-    lum = 1 - ( Math.floor( y / size ) % 5 / 6 + 1/6 );
+    hue = sx * 30;
+    sat = 1 - Math.floor( sy / 5 ) / 3;
+    lum = 1 - ( sy % 5 / 6 + 1/6 );
   } else if ( x >= size * 13 & y < size * 7 ) {
     // grays
     hue = 0;
     sat = 0;
-    lum = 1 - ( Math.floor( y / size ) / 6 );
+    lum = 1 - sy / 6;
   } else {
     return;
   }
 
+  this.hue = hue;
+  this.sat = sat;
+  this.lum = lum;
+
+  var selectorBorder = this.options.selectorBorder;
+  this.selector.style.left = sx * size + this.canvasOffset.x - selectorBorder + 'px';
+  this.selector.style.top = sy * size + this.canvasOffset.y - selectorBorder + 'px';
+
   var moder = colorModers[ this.options.mode ] || colorModers.hsl;
   var color = moder( hue, sat, lum );
+  this.updateColor( color );
+};
 
+proto.updateColor = function( color ) {
   if ( color == this.color ) {
     return;
   }
   // new color
   this.color = color;
-  this.input.value = color;
-  this.emitEvent( 'change', [ this.color ] );
+  // set text
+  if ( this.options.setText ) {
+    var textProp = this.isInputAnchor ? 'value' : 'textContent';
+    this.anchor[ textProp ] = color;
+  }
+  if ( this.options.setBGColor ) {
+    this.anchor.style.backgroundColor = color;
+    this.anchor.style.color = this.lum > 0.5 ? '#222' : 'white';
+  }
+  // event
+  this.emitEvent( 'change', [ color ] );
 };
 
 // -------------------------- utils -------------------------- //
@@ -214,7 +256,6 @@ function hsl2hex( h, s, l ) {
 
 // thx jfsiii
 // https://github.com/jfsiii/chromath/blob/master/src/static.js#L312
-
 function hsl2rgb(h, s, l) {
 
   var C = (1 - Math.abs(2*l-1)) * s;
@@ -252,6 +293,7 @@ function rgb2hex( rgb ) {
   return '#' + hex.join('');
 }
 
+// #123456 -> #135
 function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
 }
