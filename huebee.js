@@ -63,19 +63,36 @@ proto.renderColors = function() {
 proto.renderColorGrid = function( sat ) {
   var count = 7;
   var count1 = count - 1;
-  sat = Math.round( sat * 100 );
   var gridSize = this.options.gridSize;
+  var moder = this.getColorModer();
 
   for ( var row = 1; row < count1; row++ ) {
     for ( var col = 0; col < 12; col++ ) {
       var hue = col * 30;
-      var lum = Math.round( ( 1 - row / count1 ) * 100 );
-      this.ctx.fillStyle = 'hsl(' + hue + ',' + sat + '%,' + lum + '% )';
+      var lum = 1 - row / count1;
+      this.ctx.fillStyle = moder( hue, sat, lum );
       var x = gridSize * col;
       var y = gridSize * (row-1);
       this.ctx.fillRect( x, y, gridSize, gridSize );
     }
   }
+};
+
+var colorModers = {
+  hsl: function( h, s, l ) {
+    s = Math.round( s * 100 );
+    l = Math.round( l * 100 );
+    return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+  },
+  hex: hsl2hex,
+  'roundHex': function( h, s, l ) {
+    var hex = hsl2hex( h, s, l );
+    return roundHex( hex );
+  }
+};
+
+proto.getColorModer = function() {
+  return colorModers[ this.options.mode ] || colorModers.hsl;
 };
 
 // ----- canvas pointer ----- //
@@ -94,14 +111,7 @@ proto.canvasPointerMove = function( event, pointer ) {
   this.canvasPointerChange( pointer );
 };
 
-var colorModers = {
-  hsl: function( h, s, l ) {
-    s = Math.round( s * 100 );
-    l = Math.round( l * 100 );
-    return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
-  },
-  hex: hsl2hex,
-};
+
 
 proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
@@ -120,6 +130,8 @@ proto.canvasPointerChange = function( pointer ) {
     hue = 0;
     sat = 0;
     lum = 1 - ( Math.floor( y / (size * 2 )) / 6 );
+  } else {
+    return;
   }
 
   var moder = colorModers[ this.options.mode ] || colorModers.hsl;
@@ -186,4 +198,8 @@ function rgb2hex( rgb ) {
   });
 
   return '#' + hex.join('');
+}
+
+function roundHex( hex ) {
+  return '#' + hex[1] + hex[3] + hex[5];
 }

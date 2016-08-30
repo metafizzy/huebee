@@ -21,7 +21,7 @@
 <script>
 var colorInput1 = document.querySelector('.color-input1');
 var hueb = new Huebee( colorInput1, {
-  mode: 'hex',
+  mode: 'roundHex',
 });
 hueb.on( 'change', function( color ) {
   document.body.style.backgroundColor = color;
