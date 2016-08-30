@@ -1,0 +1,27 @@
+.huebee {
+  position: absolute;
+  padding: 10px;
+  background: #EEE;
+  border-radius: 5px;
+}
+
+.huebee__canvas {
+  display: block;
+}
+
+.huebee__close-button {
+  display: block;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: -8px;
+  right: -9px;
+  border-radius: 12px;
+  background: #222;
+}
+
+.huebee__close-button__x {
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
