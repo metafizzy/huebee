@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+
+  <title>basic</title>
+
+</head>
+<body>
+
+  <h1>basic</h1>
+
+<input class="color-input1" />
+<input class="color-input2" />
+
+<script src="../bower_components/ev-emitter/ev-emitter.js"></script>
+<script src="../bower_components/unipointer/unipointer.js"></script>
+<script src="../huebee.js"></script>
+
+<script>
+var colorInput1 = document.querySelector('.color-input1');
+var hueb = new Huebee( colorInput1, {
+  mode: 'hex',
+});
+hueb.on( 'change', function( color ) {
+  document.body.style.backgroundColor = color;
+});
+</script>
+
+</body>
+</html>

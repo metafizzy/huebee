@@ -1,0 +1,24 @@
+{
+  "name": "huebee",
+  "authors": [
+    "David DeSandro <desandrocodes@gmail.com>"
+  ],
+  "description": "color picker",
+  "main": "huebee.js",
+  "dependencies": {
+    "unipointer": "^2.1.0"
+  },
+  "keywords": [
+    "color",
+    "picker"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
