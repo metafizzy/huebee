@@ -76,45 +76,43 @@ proto.create = function() {
 };
 
 proto.renderColors = function() {
-  var ctx = this.ctx;
-  var gridSize = this.gridSize;
   var shades = this.options.shades;
   var sats = this.options.saturations;
   this.renderColorGrid( 1 );
   // saturations
   for ( var i=1; i < sats; i++ ) {
-    ctx.save();
-    ctx.translate( 0, gridSize * shades * i );
+    this.ctx.save();
+    this.ctx.translate( 0, this.gridSize * shades * i );
     var sat = 1 - i/sats;
     this.renderColorGrid( sat );
-    ctx.restore();
+    this.ctx.restore();
   }
 
   // grays
   var moder = this.getColorModer();
   for ( i=0; i < shades+2; i++ ) {
     var lum = 1 - i/(shades+1);
-    this.ctx.fillStyle = moder( 0, 0, lum );
-    this.ctx.fillRect( gridSize * 13, i * gridSize, gridSize, gridSize );
+    var gray = moder( 0, 0, lum );
+    this.renderSwatch( gray, 13, i );
   }
-
 };
 
+proto.renderSwatch = function( color, gridX, gridY ) {
+  var gridSize = this.gridSize;
+  this.ctx.fillStyle = color;
+  this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
+};
 
 proto.renderColorGrid = function( sat ) {
-  // var count = 7;
   var shades1 = this.options.shades + 1;
-  var gridSize = this.gridSize;
   var moder = this.getColorModer();
 
   for ( var row = 1; row < shades1; row++ ) {
     for ( var col = 0; col < 12; col++ ) {
       var hue = col * 30;
       var lum = 1 - row / shades1;
-      this.ctx.fillStyle = moder( hue, sat, lum );
-      var x = gridSize * col;
-      var y = gridSize * (row-1);
-      this.ctx.fillRect( x, y, gridSize, gridSize );
+      var color = moder( hue, sat, lum );
+      this.renderSwatch( color, col, row-1 );
     }
   }
 };
