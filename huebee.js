@@ -14,7 +14,6 @@ function Huebee( anchor, options ) {
 Huebee.defaults = {
   shades: 5,
   saturations: 3,
-  gridSize: 15,
   mode: 'hsl',
   setText: true,
   setBGColor: false,
@@ -29,7 +28,6 @@ proto.option = function( options ) {
 var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.create = function() {
-  var gridSize = this.options.gridSize;
   // open events
   this.isInputAnchor = this.anchor.nodeName == 'INPUT';
   this.anchor.addEventListener( 'click', this.open.bind( this ) );
@@ -47,11 +45,6 @@ proto.create = function() {
   this.canvas = document.createElement('canvas');
   this.ctx = this.canvas.getContext('2d');
   this.canvas.className = 'huebee__canvas';
-  var shades = this.options.shades;
-  var sats = this.options.saturations;
-  this.canvas.width = gridSize * 14;
-  this.canvas.height = gridSize * shades * sats;
-  this.renderColors();
   // canvas pointer events
   var canvasPointer = this.canvasPointer = new Unipointer();
   canvasPointer._bindStartEvent( this.canvas );
@@ -61,7 +54,6 @@ proto.create = function() {
   // create cursor
   this.cursor = document.createElement('div');
   this.cursor.className = 'huebee__cursor';
-  this.cursor.style.width = this.cursor.style.height = gridSize + 'px';
   container.appendChild( this.cursor );
   // create close button
   var svg = document.createElementNS( svgURI, 'svg');
@@ -85,7 +77,7 @@ proto.create = function() {
 
 proto.renderColors = function() {
   var ctx = this.ctx;
-  var gridSize = this.options.gridSize;
+  var gridSize = this.gridSize;
   var shades = this.options.shades;
   var sats = this.options.saturations;
   this.renderColorGrid( 1 );
@@ -112,7 +104,7 @@ proto.renderColors = function() {
 proto.renderColorGrid = function( sat ) {
   // var count = 7;
   var shades1 = this.options.shades + 1;
-  var gridSize = this.options.gridSize;
+  var gridSize = this.gridSize;
   var moder = this.getColorModer();
 
   for ( var row = 1; row < shades1; row++ ) {
@@ -161,12 +153,24 @@ proto.open = function() {
   this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
   // measurements
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderWidth, 10 );
+  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder * 2 );
   this.canvasOffset = {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
   };
 
+  this.updateSizes();
+  this.renderColors();
+
   this.isOpen = true;
+};
+
+proto.updateSizes = function() {
+  var hues = 12;
+  var shades = this.options.shades;
+  var sats = this.options.saturations;
+  this.canvas.width = this.gridSize * ( hues + 2 );
+  this.canvas.height = this.gridSize * shades * sats;
 };
 
 proto.docPointerDown = function( event ) {
@@ -204,7 +208,7 @@ proto.canvasPointerMove = function( event, pointer ) {
 proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
-  var size = this.options.gridSize;
+  var size = this.gridSize;
   var shades = this.options.shades;
   var shades1 = shades + 1;
   var sats = this.options.saturations;

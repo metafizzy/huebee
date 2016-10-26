@@ -18,6 +18,8 @@
 }
 
 .huebee__cursor {
+  width: 15px;
+  height: 15px;
   position: absolute;
   left: 0px;
   top: 0px;
