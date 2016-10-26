@@ -176,8 +176,8 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
-  this.canvas.width = this.gridSize * ( hues + 2 );
-  this.canvas.height = this.gridSize * shades * sats;
+  this.canvas.width = this.gridSize * (hues+2);
+  this.canvas.height = this.gridSize * Math.max( shades*sats, shades+2 );
 };
 
 proto.docPointerDown = function( event ) {
