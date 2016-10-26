@@ -21,6 +21,12 @@ body, input {
   border-radius: 20px;
   background: #EEE;
 }
+
+.ci2 .huebee__cursor {
+  width: 10px;
+  height: 10px;
+  border-width: 5px;
+}
 </style>
 
 </head>
@@ -40,6 +46,8 @@ body, input {
 var colorInput1 = document.querySelector('.color-input1');
 var hueb = new Huebee( colorInput1, {
   mode: 'roundHex',
+  // hues: 6,
+  // hue0: 210,
   // setBGColor: true,
   // gridSize: 20,
   // selectorBorder: 5,

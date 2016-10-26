@@ -12,6 +12,8 @@ function Huebee( anchor, options ) {
 }
 
 Huebee.defaults = {
+  hues: 12,
+  hue0: 0,
   shades: 5,
   saturations: 3,
   mode: 'hsl',
@@ -76,45 +78,52 @@ proto.create = function() {
 };
 
 proto.renderColors = function() {
+  // reset swatches
+  this.swatches = {};
+  this.updateColorModer();
+  //
   var shades = this.options.shades;
   var sats = this.options.saturations;
-  this.renderColorGrid( 1 );
-  // saturations
-  for ( var i=1; i < sats; i++ ) {
-    this.ctx.save();
-    this.ctx.translate( 0, this.gridSize * shades * i );
+  var hues = this.options.hues;
+  // render saturation grids
+  for ( var i=0; i < sats; i++ ) {
     var sat = 1 - i/sats;
-    this.renderColorGrid( sat );
-    this.ctx.restore();
+    this.renderColorGrid( i, sat, shades * i );
   }
 
-  // grays
-  var moder = this.getColorModer();
+  // render grays
   for ( i=0; i < shades+2; i++ ) {
     var lum = 1 - i/(shades+1);
-    var gray = moder( 0, 0, lum );
-    this.renderSwatch( gray, 13, i );
+    this.addSwatch( 0, 0, lum, hues+1, i );
   }
 };
 
-proto.renderSwatch = function( color, gridX, gridY ) {
-  var gridSize = this.gridSize;
-  this.ctx.fillStyle = color;
-  this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
-};
-
-proto.renderColorGrid = function( sat ) {
-  var shades1 = this.options.shades + 1;
-  var moder = this.getColorModer();
-
-  for ( var row = 1; row < shades1; row++ ) {
-    for ( var col = 0; col < 12; col++ ) {
-      var hue = col * 30;
-      var lum = 1 - row / shades1;
-      var color = moder( hue, sat, lum );
-      this.renderSwatch( color, col, row-1 );
+proto.renderColorGrid = function( i, sat, shadeY ) {
+  var shades = this.options.shades;
+  var hues = this.options.hues;
+  var hue0 = this.options.hue0;
+  for ( var row = 0; row < shades; row++ ) {
+    for ( var col = 0; col < hues; col++ ) {
+      var hue = Math.round( col * 360/hues + hue0 ) % 360;
+      var lum = 1 - (row+1) / (shades+1);
+      var gridY = row + shadeY;
+      this.addSwatch( hue, sat, lum, col, gridY );
     }
   }
+};
+
+proto.addSwatch = function( h, s, l, gridX, gridY ) {
+  var gridSize = this.gridSize;
+  var color = this.colorModer( h, s, l );
+  this.ctx.fillStyle = color;
+  this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
+  // add swatch color to hash
+  this.swatches[ gridX + ',' + gridY ] = {
+    color: color,
+    hue: h,
+    sat: s,
+    lum: l,
+  };
 };
 
 var colorModers = {
@@ -130,8 +139,8 @@ var colorModers = {
   }
 };
 
-proto.getColorModer = function() {
-  return colorModers[ this.options.mode ] || colorModers.hsl;
+proto.updateColorModer = function() {
+  this.colorModer = colorModers[ this.options.mode ] || colorModers.hsl;
 };
 
 // ----- events ----- //
@@ -164,7 +173,7 @@ proto.open = function() {
 };
 
 proto.updateSizes = function() {
-  var hues = 12;
+  var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
   this.canvas.width = this.gridSize * ( hues + 2 );
@@ -206,42 +215,25 @@ proto.canvasPointerMove = function( event, pointer ) {
 proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
-  var size = this.gridSize;
-  var shades = this.options.shades;
-  var shades1 = shades + 1;
-  var sats = this.options.saturations;
-  var maxYGrid = this.options.saturations * shades - 1;
-  x = Math.max( 0, Math.min( x, size * 13 ) );
-  y = Math.max( 0, Math.min( y, size * maxYGrid ) );
-  var sx = Math.floor( x / size );
-  var sy = Math.floor( y / size );
-  var hue, sat, lum;
-  if ( x < size * 12 ) {
-    // colors
-    hue = sx * 30;
-    sat = 1 - Math.floor( sy / shades ) / sats;
-    lum = 1 - ( sy % shades / shades1 + 1/shades1 );
-  } else if ( x >= size * 13 & y < size * (shades+2) ) {
-    // grays
-    hue = 0;
-    sat = 0;
-    lum = 1 - sy/shades1;
-  } else {
+  var gridSize = this.gridSize;
+  var sx = Math.floor( x / gridSize );
+  var sy = Math.floor( y / gridSize );
+
+  var swatch = this.swatches[ sx + ',' + sy ];
+  if ( !swatch ) {
     return;
   }
 
-  this.hue = hue;
-  this.sat = sat;
-  this.lum = lum;
-
-  this.cursor.style.left = sx * size + this.canvasOffset.x -
+  this.hue = swatch.hue;
+  this.sat = swatch.sat;
+  this.lum = swatch.lum;
+  // position cursor
+  this.cursor.style.left = sx * gridSize + this.canvasOffset.x -
     this.cursorBorder + 'px';
-  this.cursor.style.top = sy * size + this.canvasOffset.y -
+  this.cursor.style.top = sy * gridSize + this.canvasOffset.y -
     this.cursorBorder + 'px';
 
-  var moder = colorModers[ this.options.mode ] || colorModers.hsl;
-  var color = moder( hue, sat, lum );
-  this.updateColor( color );
+  this.updateColor( swatch.color );
 };
 
 proto.updateColor = function( color ) {
