@@ -22,10 +22,15 @@ body, input {
   background: #EEE;
 }
 
-.ci2 .huebee__cursor {
+.huebee1 .huebee__cursor {
+  width: 20px;
+  height: 20px;
+  border-width: 5px;
+}
+
+.huebee2 .huebee__cursor {
   width: 10px;
   height: 10px;
-  border-width: 5px;
 }
 </style>
 
@@ -46,11 +51,12 @@ body, input {
 var colorInput1 = document.querySelector('.color-input1');
 var hueb = new Huebee( colorInput1, {
   mode: 'roundHex',
-  // hues: 6,
-  // hue0: 210,
-  // setBGColor: true,
-  // gridSize: 20,
-  // selectorBorder: 5,
+  hues: 7,
+  shades: 7,
+  saturations: 1,
+  className: 'huebee1',
+  hue0: 200,
+  setBGColor: true,
 });
 hueb.on( 'change', function( color ) {
   document.body.style.backgroundColor = color;
@@ -59,7 +65,7 @@ hueb.on( 'change', function( color ) {
 new Huebee( document.querySelector('.color-input2'), {
   mode: 'roundHex',
   setBGColor: true,
-  className: 'ci2',
+  className: 'huebee2',
 })
 
 new Huebee( document.querySelector('.color-button1'), {
