@@ -227,6 +227,9 @@ proto.canvasPointerChange = function( pointer ) {
   this.hue = swatch.hue;
   this.sat = swatch.sat;
   this.lum = swatch.lum;
+  // estimate if color can have dark or white text
+  var lightness = this.lum - Math.cos( (this.hue+60) / 180*Math.PI ) * 0.1;
+  this.isLight = lightness > 0.5;
   // position cursor
   this.cursor.style.left = sx * gridSize + this.canvasOffset.x -
     this.cursorBorder + 'px';
@@ -249,7 +252,7 @@ proto.updateColor = function( color ) {
   }
   if ( this.options.setBGColor ) {
     this.anchor.style.backgroundColor = color;
-    this.anchor.style.color = this.lum > 0.5 ? '#222' : 'white';
+    this.anchor.style.color = this.isLight ? '#222' : 'white';
   }
   // event
   this.emitEvent( 'change', [ color ] );
