@@ -17,6 +17,7 @@ Huebee.defaults = {
   selectorBorder: 3,
   setText: true,
   setBGColor: false,
+  offset: [ 0, 5 ],
 };
 
 var proto = Huebee.prototype = Object.create( EvEmitter.prototype );
@@ -139,8 +140,9 @@ proto.open = function() {
     return;
   }
   var boundingRect = this.anchor.getBoundingClientRect();
-  this.element.style.left = boundingRect.left + 'px';
-  this.element.style.top = boundingRect.top + this.anchor.offsetHeight + 5 + 'px';
+  this.element.style.left = boundingRect.left + this.options.offset[0] + 'px';
+  this.element.style.top = boundingRect.top + this.anchor.offsetHeight +
+    this.options.offset[1] + 'px';
   docElem.addEventListener( 'mousedown', this.onDocPointerDown );
   docElem.addEventListener( 'touchstart', this.onDocPointerDown );
   // add canvas to DOM
