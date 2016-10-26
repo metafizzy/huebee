@@ -2,6 +2,12 @@
 
 .huebee {
   position: absolute;
+}
+
+.huebee__container {
+  position: absolute;
+  left: 0;
+  top: 5px;
   padding: 10px;
   background: #EEE;
   border-radius: 5px;

@@ -19,7 +19,6 @@ Huebee.defaults = {
   cursorBorder: 3,
   setText: true,
   setBGColor: false,
-  offset: [ 0, 5 ],
 };
 
 var proto = Huebee.prototype = Object.create( EvEmitter.prototype );
@@ -39,8 +38,13 @@ proto.create = function() {
     this.anchor.addEventListener( 'focus', this.open.bind( this ) );
   }
   // create element
-  this.element = document.createElement('div');
-  this.element.className = 'huebee';
+  var element = this.element = document.createElement('div');
+  element.className = 'huebee';
+  element.className += this.options.className ? ' ' + this.options.className :
+    '';
+  // create container
+  var container = this.container = document.createElement('div');
+  container.className = 'huebee__container';
   // create canvas
   this.canvas = document.createElement('canvas');
   this.ctx = this.canvas.getContext('2d');
@@ -55,14 +59,14 @@ proto.create = function() {
   canvasPointer._bindStartEvent( this.canvas );
   canvasPointer.on( 'pointerDown', this.canvasPointerDown.bind( this ) );
   canvasPointer.on( 'pointerMove', this.canvasPointerMove.bind( this ) );
-  this.element.appendChild( this.canvas );
+  container.appendChild( this.canvas );
   // create cursor
   this.cursor = document.createElement('div');
   this.cursor.className = 'huebee__cursor';
   var cursorSize = gridSize + this.options.cursorBorder*2 + 'px';
   this.cursor.style.width = this.cursor.style.height = cursorSize;
   this.cursor.style.borderWidth = this.options.cursorBorder + 'px';
-  this.element.appendChild( this.cursor );
+  container.appendChild( this.cursor );
   // create close button
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
@@ -72,7 +76,8 @@ proto.create = function() {
   path.setAttribute( 'class', 'huebee__close-button__x' );
   svg.appendChild( path );
   svg.addEventListener( 'click', this.close.bind( this ) );
-  this.element.appendChild( svg );
+  container.appendChild( svg );
+  element.appendChild( container );
   // set relative position on parent
   var parentStyle = getComputedStyle( this.anchor.parentNode );
   if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
@@ -151,9 +156,9 @@ proto.open = function() {
   if ( this.isOpen ) {
     return;
   }
-  this.element.style.left = this.anchor.offsetLeft + this.options.offset[0] + 'px';
+  this.element.style.left = this.anchor.offsetLeft + 'px';
   this.element.style.top = this.anchor.offsetTop + this.anchor.offsetHeight +
-    this.options.offset[1] + 'px';
+    'px';
   docElem.addEventListener( 'mousedown', this.onDocPointerDown );
   docElem.addEventListener( 'touchstart', this.onDocPointerDown );
   // add canvas to DOM
