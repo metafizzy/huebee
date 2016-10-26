@@ -1,5 +1,3 @@
-.huebee, .huebee * { box-sizing: border-box; }
-
 .huebee {
   position: absolute;
 }
@@ -23,8 +21,8 @@
   position: absolute;
   left: 0px;
   top: 0px;
-  border-color: white;
-  border-style: solid;
+  box-sizing: content-box;
+  border: 3px solid white;
   border-radius: 5px;
   pointer-events: none;
 }

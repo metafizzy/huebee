@@ -16,7 +16,6 @@ Huebee.defaults = {
   saturations: 3,
   gridSize: 15,
   mode: 'hsl',
-  cursorBorder: 3,
   setText: true,
   setBGColor: false,
 };
@@ -39,9 +38,8 @@ proto.create = function() {
   }
   // create element
   var element = this.element = document.createElement('div');
-  element.className = 'huebee';
-  element.className += this.options.className ? ' ' + this.options.className :
-    '';
+  element.className = 'huebee ';
+  element.className += this.options.className || '';
   // create container
   var container = this.container = document.createElement('div');
   container.className = 'huebee__container';
@@ -63,9 +61,7 @@ proto.create = function() {
   // create cursor
   this.cursor = document.createElement('div');
   this.cursor.className = 'huebee__cursor';
-  var cursorSize = gridSize + this.options.cursorBorder*2 + 'px';
-  this.cursor.style.width = this.cursor.style.height = cursorSize;
-  this.cursor.style.borderWidth = this.options.cursorBorder + 'px';
+  this.cursor.style.width = this.cursor.style.height = gridSize + 'px';
   container.appendChild( this.cursor );
   // create close button
   var svg = document.createElementNS( svgURI, 'svg');
@@ -163,6 +159,8 @@ proto.open = function() {
   docElem.addEventListener( 'touchstart', this.onDocPointerDown );
   // add canvas to DOM
   this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
+  // measurements
+  this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderWidth, 10 );
   this.canvasOffset = {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
@@ -234,9 +232,10 @@ proto.canvasPointerChange = function( pointer ) {
   this.sat = sat;
   this.lum = lum;
 
-  var cursorBorder = this.options.cursorBorder;
-  this.cursor.style.left = sx * size + this.canvasOffset.x - cursorBorder + 'px';
-  this.cursor.style.top = sy * size + this.canvasOffset.y - cursorBorder + 'px';
+  this.cursor.style.left = sx * size + this.canvasOffset.x -
+    this.cursorBorder + 'px';
+  this.cursor.style.top = sy * size + this.canvasOffset.y -
+    this.cursorBorder + 'px';
 
   var moder = colorModers[ this.options.mode ] || colorModers.hsl;
   var color = moder( hue, sat, lum );
