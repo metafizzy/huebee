@@ -12,9 +12,11 @@ function Huebee( anchor, options ) {
 }
 
 Huebee.defaults = {
+  shades: 5,
+  saturations: 3,
   gridSize: 15,
   mode: 'hsl',
-  selectorBorder: 3,
+  cursorBorder: 3,
   setText: true,
   setBGColor: false,
   offset: [ 0, 5 ],
@@ -43,8 +45,10 @@ proto.create = function() {
   this.canvas = document.createElement('canvas');
   this.ctx = this.canvas.getContext('2d');
   this.canvas.className = 'huebee__canvas';
+  var shades = this.options.shades;
+  var sats = this.options.saturations;
   this.canvas.width = gridSize * 14;
-  this.canvas.height = gridSize * 15;
+  this.canvas.height = gridSize * shades * sats;
   this.renderColors();
   // canvas pointer events
   var canvasPointer = this.canvasPointer = new Unipointer();
@@ -52,13 +56,13 @@ proto.create = function() {
   canvasPointer.on( 'pointerDown', this.canvasPointerDown.bind( this ) );
   canvasPointer.on( 'pointerMove', this.canvasPointerMove.bind( this ) );
   this.element.appendChild( this.canvas );
-  // create selection
-  this.selector = document.createElement('div');
-  this.selector.className = 'huebee__selector';
-  var selectorSize = gridSize + this.options.selectorBorder*2 + 'px';
-  this.selector.style.width = this.selector.style.height = selectorSize;
-  this.selector.style.borderWidth = this.options.selectorBorder + 'px';
-  this.element.appendChild( this.selector );
+  // create cursor
+  this.cursor = document.createElement('div');
+  this.cursor.className = 'huebee__cursor';
+  var cursorSize = gridSize + this.options.cursorBorder*2 + 'px';
+  this.cursor.style.width = this.cursor.style.height = cursorSize;
+  this.cursor.style.borderWidth = this.options.cursorBorder + 'px';
+  this.element.appendChild( this.cursor );
   // create close button
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
@@ -69,26 +73,34 @@ proto.create = function() {
   svg.appendChild( path );
   svg.addEventListener( 'click', this.close.bind( this ) );
   this.element.appendChild( svg );
-
+  // set relative position on parent
+  var parentStyle = getComputedStyle( this.anchor.parentNode );
+  if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
+    this.anchor.parentNode.style.position = 'relative';
+  }
+  // event
   this.onDocPointerDown = this.docPointerDown.bind( this );
 };
 
 proto.renderColors = function() {
   var ctx = this.ctx;
   var gridSize = this.options.gridSize;
+  var shades = this.options.shades;
+  var sats = this.options.saturations;
   this.renderColorGrid( 1 );
-  ctx.save();
-  ctx.translate( 0, gridSize * 5 );
-  this.renderColorGrid( 0.66 );
-  ctx.restore();
-  ctx.save();
-  ctx.translate( 0, gridSize * 10 );
-  this.renderColorGrid( 0.33 );
-  ctx.restore();
+  // saturations
+  for ( var i=1; i < sats; i++ ) {
+    ctx.save();
+    ctx.translate( 0, gridSize * shades * i );
+    var sat = 1 - i/sats;
+    this.renderColorGrid( sat );
+    ctx.restore();
+  }
+
   // grays
   var moder = this.getColorModer();
-  for ( var i=0; i<7; i++ ) {
-    var lum = 1 - i/6;
+  for ( i=0; i < shades+2; i++ ) {
+    var lum = 1 - i/(shades+1);
     this.ctx.fillStyle = moder( 0, 0, lum );
     this.ctx.fillRect( gridSize * 13, i * gridSize, gridSize, gridSize );
   }
@@ -97,15 +109,15 @@ proto.renderColors = function() {
 
 
 proto.renderColorGrid = function( sat ) {
-  var count = 7;
-  var count1 = count - 1;
+  // var count = 7;
+  var shades1 = this.options.shades + 1;
   var gridSize = this.options.gridSize;
   var moder = this.getColorModer();
 
-  for ( var row = 1; row < count1; row++ ) {
+  for ( var row = 1; row < shades1; row++ ) {
     for ( var col = 0; col < 12; col++ ) {
       var hue = col * 30;
-      var lum = 1 - row / count1;
+      var lum = 1 - row / shades1;
       this.ctx.fillStyle = moder( hue, sat, lum );
       var x = gridSize * col;
       var y = gridSize * (row-1);
@@ -139,9 +151,8 @@ proto.open = function() {
   if ( this.isOpen ) {
     return;
   }
-  var boundingRect = this.anchor.getBoundingClientRect();
-  this.element.style.left = boundingRect.left + this.options.offset[0] + 'px';
-  this.element.style.top = boundingRect.top + this.anchor.offsetHeight +
+  this.element.style.left = this.anchor.offsetLeft + this.options.offset[0] + 'px';
+  this.element.style.top = this.anchor.offsetTop + this.anchor.offsetHeight +
     this.options.offset[1] + 'px';
   docElem.addEventListener( 'mousedown', this.onDocPointerDown );
   docElem.addEventListener( 'touchstart', this.onDocPointerDown );
@@ -191,21 +202,25 @@ proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
   var size = this.options.gridSize;
+  var shades = this.options.shades;
+  var shades1 = shades + 1;
+  var sats = this.options.saturations;
+  var maxYGrid = this.options.saturations * shades - 1;
   x = Math.max( 0, Math.min( x, size * 13 ) );
-  y = Math.max( 0, Math.min( y, size * 14 ) );
+  y = Math.max( 0, Math.min( y, size * maxYGrid ) );
   var sx = Math.floor( x / size );
   var sy = Math.floor( y / size );
   var hue, sat, lum;
   if ( x < size * 12 ) {
     // colors
     hue = sx * 30;
-    sat = 1 - Math.floor( sy / 5 ) / 3;
-    lum = 1 - ( sy % 5 / 6 + 1/6 );
-  } else if ( x >= size * 13 & y < size * 7 ) {
+    sat = 1 - Math.floor( sy / shades ) / sats;
+    lum = 1 - ( sy % shades / shades1 + 1/shades1 );
+  } else if ( x >= size * 13 & y < size * (shades+2) ) {
     // grays
     hue = 0;
     sat = 0;
-    lum = 1 - sy / 6;
+    lum = 1 - sy/shades1;
   } else {
     return;
   }
@@ -214,9 +229,9 @@ proto.canvasPointerChange = function( pointer ) {
   this.sat = sat;
   this.lum = lum;
 
-  var selectorBorder = this.options.selectorBorder;
-  this.selector.style.left = sx * size + this.canvasOffset.x - selectorBorder + 'px';
-  this.selector.style.top = sy * size + this.canvasOffset.y - selectorBorder + 'px';
+  var cursorBorder = this.options.cursorBorder;
+  this.cursor.style.left = sx * size + this.canvasOffset.x - cursorBorder + 'px';
+  this.cursor.style.top = sy * size + this.canvasOffset.y - cursorBorder + 'px';
 
   var moder = colorModers[ this.options.mode ] || colorModers.hsl;
   var color = moder( hue, sat, lum );
