@@ -30,6 +30,13 @@ body, input {
 
 .huebee2 .huebee__cursor {
 }
+
+.patch {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #CCC;
+}
 </style>
 
 </head>
@@ -37,9 +44,17 @@ body, input {
 
   <h1>basic</h1>
 
-<input class="color-input1" />
-<input class="color-input2" />
-<span class="color-button color-button1"></span>
+<p>
+  <input class="color-input1" />
+  <input class="color-input2" />
+</p>
+
+<p>
+  <button class="color-button color-button1 color-button1-bg"></button>
+  <span class="patch color-button1-bg"></span>
+  <span class="patch color-button1-bg"></span>
+  <span class="patch color-button1-bg"></span>
+</p>
 
 <script src="../bower_components/ev-emitter/ev-emitter.js"></script>
 <script src="../bower_components/unipointer/unipointer.js"></script>
@@ -75,7 +90,7 @@ new Huebee( document.querySelector('.color-input2'), {
 
 new Huebee( document.querySelector('.color-button1'), {
   mode: 'roundHex',
-  setBGColor: true,
+  setBGColor: '.color-button1-bg',
 })
 </script>
 

@@ -1,5 +1,6 @@
 .huebee {
   position: absolute;
+  z-index: 1;
 }
 
 .huebee__container {
@@ -34,7 +35,7 @@
   position: absolute;
   width: 24px;
   height: 24px;
-  top: -8px;
+  top: -9px;
   right: -9px;
   border-radius: 12px;
   background: #222;

@@ -30,12 +30,23 @@ proto.option = function( options ) {
 var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.create = function() {
+  // properties
+  var setBGColor = this.options.setBGColor;
+  if ( setBGColor === true ) {
+    this.setBGElems = [ this.anchor ];
+  } else if ( typeof setBGColor == 'string' ) {
+    this.setBGElems = document.querySelectorAll( setBGColor );
+  }
+  // events
+  // HACK: this is getting ugly
+  this.outsideCloseIt = this.outsideClose.bind( this );
+  this.onDocKeydown = this.docKeydown.bind( this );
+  this.closeIt = this.close.bind( this );
+  this.openIt = this.open.bind( this );
   // open events
   this.isInputAnchor = this.anchor.nodeName == 'INPUT';
-  this.anchor.addEventListener( 'click', this.open.bind( this ) );
-  if ( this.isInputAnchor ) {
-    this.anchor.addEventListener( 'focus', this.open.bind( this ) );
-  }
+  this.anchor.addEventListener( 'click', this.openIt );
+  this.anchor.addEventListener( 'focus', this.openIt );
   // create element
   var element = this.element = document.createElement('div');
   element.className = 'huebee ';
@@ -65,7 +76,7 @@ proto.create = function() {
   path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7, L 7,17' );
   path.setAttribute( 'class', 'huebee__close-button__x' );
   svg.appendChild( path );
-  svg.addEventListener( 'click', this.close.bind( this ) );
+  svg.addEventListener( 'click', this.closeIt );
   container.appendChild( svg );
   element.appendChild( container );
   // set relative position on parent
@@ -73,8 +84,6 @@ proto.create = function() {
   if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
     this.anchor.parentNode.style.position = 'relative';
   }
-  // event
-  this.onDocPointerDown = this.docPointerDown.bind( this );
 };
 
 proto.renderColors = function() {
@@ -167,8 +176,7 @@ proto.open = function() {
   this.element.style.left = this.anchor.offsetLeft + 'px';
   this.element.style.top = this.anchor.offsetTop + this.anchor.offsetHeight +
     'px';
-  docElem.addEventListener( 'mousedown', this.onDocPointerDown );
-  docElem.addEventListener( 'touchstart', this.onDocPointerDown );
+  this.bindOpenEvents( true );
   // add canvas to DOM
   this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
   // measurements
@@ -185,6 +193,15 @@ proto.open = function() {
   this.isOpen = true;
 };
 
+proto.bindOpenEvents = function( isAdd ) {
+  var method = ( isAdd ? 'add' : 'remove' ) + 'EventListener';
+  docElem[ method]( 'mousedown', this.outsideCloseIt );
+  docElem[ method]( 'touchstart', this.outsideCloseIt );
+  document[ method ]( 'focusin', this.outsideCloseIt );
+  document[ method ]( 'keydown', this.onDocKeydown );
+  this.anchor[ method ]( 'blur', this.closeIt );
+};
+
 proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
@@ -198,9 +215,29 @@ proto.updateSizes = function() {
   this.canvas.height = this.gridSize * height;
 };
 
-proto.docPointerDown = function( event ) {
-  if ( !this.element.contains( event.target ) && event.target != this.anchor ) {
+// close if target is not anchor or element
+proto.outsideClose = function( event ) {
+  var isAnchor = this.anchor.contains( event.target );
+  var isElement = this.element.contains( event.target );
+  if ( !isAnchor && !isElement ) {
     this.close();
+  }
+};
+
+var onKeydowns = {
+  13: function() { // enter
+    this.close();
+  },
+  27: function() { // esc
+    this.close();
+  },
+};
+
+proto.docKeydown = function( event ) {
+  // console.log( event.keyCode );
+  var onKeydown = onKeydowns[ event.keyCode ];
+  if ( onKeydown ) {
+    onKeydown.call( this );
   }
 };
 
@@ -209,8 +246,7 @@ proto.close = function() {
     return;
   }
   this.element.parentNode.removeChild( this.element );
-  docElem.removeEventListener( 'mousedown', this.onDocPointerDown );
-  docElem.removeEventListener( 'touchstart', this.onDocPointerDown );
+  this.bindOpenEvents( false );
   this.isOpen = false;
 };
 
@@ -268,9 +304,13 @@ proto.updateColor = function( color ) {
     var textProp = this.isInputAnchor ? 'value' : 'textContent';
     this.anchor[ textProp ] = color;
   }
-  if ( this.options.setBGColor ) {
-    this.anchor.style.backgroundColor = color;
-    this.anchor.style.color = this.isLight ? '#222' : 'white';
+  if ( this.setBGElems ) {
+    var textColor = this.isLight ? '#222' : 'white';
+    for ( var i=0; i < this.setBGElems.length; i++ ) {
+      var elem = this.setBGElems[i];
+      elem.style.backgroundColor = color;
+      elem.style.color = textColor;
+    }
   }
   // event
   this.emitEvent( 'change', [ color ] );
