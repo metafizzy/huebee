@@ -85,20 +85,33 @@ proto.renderColors = function() {
   var shades = this.options.shades;
   var sats = this.options.saturations;
   var hues = this.options.hues;
+  var customColors = this.options.customColors;
+
+  // render custom colors
+  if ( customColors && customColors.length ) {
+    customColors.forEach( function( color, i ) {
+      var x = i % hues;
+      var y = Math.floor( i/hues );
+      this.addSwatch( color, x, y );
+    }.bind( this ) );
+  }
+
   // render saturation grids
   for ( var i=0; i < sats; i++ ) {
     var sat = 1 - i/sats;
-    this.renderColorGrid( i, sat, shades * i );
+    var yOffset = shades*i + this.satY;
+    this.renderColorGrid( i, sat, yOffset );
   }
 
   // render grays
   for ( i=0; i < shades+2; i++ ) {
     var lum = 1 - i/(shades+1);
-    this.addSwatch( 0, 0, lum, hues+1, i );
+    var color = this.colorModer( 0, 0, lum );
+    this.addSwatch( color, hues+1, i, 0, 0, lum );
   }
 };
 
-proto.renderColorGrid = function( i, sat, shadeY ) {
+proto.renderColorGrid = function( i, sat, yOffset ) {
   var shades = this.options.shades;
   var hues = this.options.hues;
   var hue0 = this.options.hue0;
@@ -106,23 +119,23 @@ proto.renderColorGrid = function( i, sat, shadeY ) {
     for ( var col = 0; col < hues; col++ ) {
       var hue = Math.round( col * 360/hues + hue0 ) % 360;
       var lum = 1 - (row+1) / (shades+1);
-      var gridY = row + shadeY;
-      this.addSwatch( hue, sat, lum, col, gridY );
+      var gridY = row + yOffset;
+      var color = this.colorModer( hue, sat, lum );
+      this.addSwatch( color, col, gridY, hue, sat, lum );
     }
   }
 };
 
-proto.addSwatch = function( h, s, l, gridX, gridY ) {
+proto.addSwatch = function( color, gridX, gridY, hue, sat, lum ) {
   var gridSize = this.gridSize;
-  var color = this.colorModer( h, s, l );
   this.ctx.fillStyle = color;
   this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
   // add swatch color to hash
   this.swatches[ gridX + ',' + gridY ] = {
     color: color,
-    hue: h,
-    sat: s,
-    lum: l,
+    hue: hue,
+    sat: sat,
+    lum: lum,
   };
 };
 
@@ -176,8 +189,13 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+  var customColors = this.options.customColors;
+  var customLength = customColors && customColors.length;
+  // y position where saturation grid starts
+  this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
+  var height = Math.max( shades*sats + this.satY, shades+2 );
   this.canvas.width = this.gridSize * (hues+2);
-  this.canvas.height = this.gridSize * Math.max( shades*sats, shades+2 );
+  this.canvas.height = this.gridSize * height;
 };
 
 proto.docPointerDown = function( event ) {

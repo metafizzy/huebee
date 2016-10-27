@@ -29,8 +29,6 @@ body, input {
 }
 
 .huebee2 .huebee__cursor {
-  width: 10px;
-  height: 10px;
 }
 </style>
 
@@ -50,6 +48,9 @@ body, input {
 <script>
 var colorInput1 = document.querySelector('.color-input1');
 var hueb = new Huebee( colorInput1, {
+  customColors: [ '#C25', 'red', 'transparent',
+    '#EA0', '#19F', '#E5A', 'gray', 'darkgreen',
+    'yellow', '#F90', '#8C8' ],
   mode: 'roundHex',
   hues: 7,
   shades: 7,
@@ -58,12 +59,16 @@ var hueb = new Huebee( colorInput1, {
   hue0: 200,
   setBGColor: true,
 });
+var h1 = document.querySelector('h1');
 hueb.on( 'change', function( color ) {
-  document.body.style.backgroundColor = color;
+  h1.style.backgroundColor = color;
 });
 
 new Huebee( document.querySelector('.color-input2'), {
   mode: 'roundHex',
+  hues: 18,
+  shades: 7,
+  saturations: 2,
   setBGColor: true,
   className: 'huebee2',
 })
