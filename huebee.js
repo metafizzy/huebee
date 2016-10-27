@@ -27,7 +27,6 @@ proto.option = function( options ) {
   this.options = extend( this.options, options );
 };
 
-var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.create = function() {
   // properties
@@ -55,20 +54,37 @@ proto.create = function() {
   var container = this.container = document.createElement('div');
   container.className = 'huebee__container';
   // create canvas
-  this.canvas = document.createElement('canvas');
-  this.ctx = this.canvas.getContext('2d');
-  this.canvas.className = 'huebee__canvas';
-  // canvas pointer events
-  var canvasPointer = this.canvasPointer = new Unipointer();
-  canvasPointer._bindStartEvent( this.canvas );
-  canvasPointer.on( 'pointerDown', this.canvasPointerDown.bind( this ) );
-  canvasPointer.on( 'pointerMove', this.canvasPointerMove.bind( this ) );
-  container.appendChild( this.canvas );
+  this.createCanvas();
   // create cursor
   this.cursor = document.createElement('div');
   this.cursor.className = 'huebee__cursor';
   container.appendChild( this.cursor );
   // create close button
+  this.createCloseButton();
+
+  element.appendChild( container );
+  // set relative position on parent
+  var parentStyle = getComputedStyle( this.anchor.parentNode );
+  if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
+    this.anchor.parentNode.style.position = 'relative';
+  }
+};
+
+proto.createCanvas = function() {
+  var canvas = this.canvas = document.createElement('canvas');
+  canvas.className = 'huebee__canvas';
+  this.ctx = canvas.getContext('2d');
+  // canvas pointer events
+  var canvasPointer = this.canvasPointer = new Unipointer();
+  canvasPointer._bindStartEvent( canvas );
+  canvasPointer.on( 'pointerDown', this.canvasPointerDown.bind( this ) );
+  canvasPointer.on( 'pointerMove', this.canvasPointerMove.bind( this ) );
+  this.container.appendChild( canvas );
+};
+
+var svgURI = 'http://www.w3.org/2000/svg';
+
+proto.createCloseButton = function() {
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
@@ -77,13 +93,7 @@ proto.create = function() {
   path.setAttribute( 'class', 'huebee__close-button__x' );
   svg.appendChild( path );
   svg.addEventListener( 'click', this.closeIt );
-  container.appendChild( svg );
-  element.appendChild( container );
-  // set relative position on parent
-  var parentStyle = getComputedStyle( this.anchor.parentNode );
-  if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
-    this.anchor.parentNode.style.position = 'relative';
-  }
+  this.container.appendChild( svg );
 };
 
 proto.renderColors = function() {
