@@ -42,13 +42,14 @@ proto.create = function() {
   this.onDocKeydown = this.docKeydown.bind( this );
   this.closeIt = this.close.bind( this );
   this.openIt = this.open.bind( this );
+  this.onElemTransitionend = this.elemTransitionend.bind( this );
   // open events
   this.isInputAnchor = this.anchor.nodeName == 'INPUT';
   this.anchor.addEventListener( 'click', this.openIt );
   this.anchor.addEventListener( 'focus', this.openIt );
   // create element
   var element = this.element = document.createElement('div');
-  element.className = 'huebee ';
+  element.className = 'huebee is-hidden ';
   element.className += this.options.className || '';
   // create container
   var container = this.container = document.createElement('div');
@@ -180,6 +181,7 @@ proto.updateColorModer = function() {
 var docElem = document.documentElement;
 
 proto.open = function() {
+  /* jshint unused: false */
   if ( this.isOpen ) {
     return;
   }
@@ -187,9 +189,12 @@ proto.open = function() {
   this.element.style.top = this.anchor.offsetTop + this.anchor.offsetHeight +
     'px';
   this.bindOpenEvents( true );
+  this.element.removeEventListener( 'transitionend', this.onElemTransitionend );
   // add canvas to DOM
   this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
   // measurements
+  var duration = getComputedStyle( this.element ).transitionDuration;
+  this.hasTransition = duration && duration != 'none' && parseFloat( duration );
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderWidth, 10 );
   this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder * 2 );
   this.canvasOffset = {
@@ -201,6 +206,9 @@ proto.open = function() {
   this.renderColors();
 
   this.isOpen = true;
+  // trigger reflow for transtion
+  var h = this.element.offsetHeight;
+  this.element.classList.remove('is-hidden');
 };
 
 proto.bindOpenEvents = function( isAdd ) {
@@ -251,13 +259,38 @@ proto.docKeydown = function( event ) {
   }
 };
 
+var supportsTransitions = typeof docElem.style.transform == 'string';
+
 proto.close = function() {
   if ( !this.isOpen ) {
     return;
   }
-  this.element.parentNode.removeChild( this.element );
+
+  if ( supportsTransitions && this.hasTransition ) {
+    this.element.addEventListener( 'transitionend', this.onElemTransitionend );
+  } else {
+    this.remove();
+  }
+  this.element.classList.add('is-hidden');
+
   this.bindOpenEvents( false );
   this.isOpen = false;
+
+};
+
+proto.remove = function() {
+  var parent = this.element.parentNode;
+  if ( parent.contains( this.element ) ) {
+    parent.removeChild( this.element );
+  }
+};
+
+proto.elemTransitionend = function( event ) {
+  if ( event.target != this.element ) {
+    return;
+  }
+  this.element.removeEventListener( 'transitionend', this.onElemTransitionend );
+  this.remove();
 };
 
 // ----- canvas pointer ----- //

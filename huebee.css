@@ -1,6 +1,13 @@
 .huebee {
   position: absolute;
   z-index: 1;
+  transform: translateY(0px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.huebee.is-hidden {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
 .huebee__container {
