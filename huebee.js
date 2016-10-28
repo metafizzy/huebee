@@ -171,7 +171,7 @@ proto.addSwatch = function( swatch, gridX, gridY ) {
   // add swatch color to hash
   this.swatches[ gridX + ',' + gridY ] = swatch;
   // add color to colorGrid
-  this.colorGrid[ swatch.color ] = {
+  this.colorGrid[ swatch.color.toUpperCase() ] = {
     x: gridX,
     y: gridY,
   };
@@ -356,7 +356,7 @@ proto.selectSwatch = function( swatch ) {
   var lightness = this.lum - Math.cos( (this.hue+60) / 180*Math.PI ) * 0.1;
   this.isLight = lightness > 0.5;
   // cursor
-  var gridPosition = this.colorGrid[ color ];
+  var gridPosition = this.colorGrid[ color.toUpperCase() ];
   this.updateCursor( gridPosition );
   var cursorMethod = gridPosition ? 'remove' : 'add';
   this.cursor.classList[ cursorMethod ]('is-hidden');
