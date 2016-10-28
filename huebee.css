@@ -37,6 +37,8 @@
   pointer-events: none;
 }
 
+.huebee__cursor.is-hidden { opacity: 0; }
+
 .huebee__close-button {
   display: block;
   position: absolute;

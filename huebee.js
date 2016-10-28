@@ -58,7 +58,7 @@ proto.create = function() {
   this.createCanvas();
   // create cursor
   this.cursor = document.createElement('div');
-  this.cursor.className = 'huebee__cursor';
+  this.cursor.className = 'huebee__cursor is-hidden';
   container.appendChild( this.cursor );
   // create close button
   this.createCloseButton();
@@ -355,6 +355,7 @@ proto.updateColor = function( color ) {
       elem.style.color = textColor;
     }
   }
+  this.cursor.classList.remove('is-hidden');
   // event
   this.emitEvent( 'change', [ color ] );
 };
