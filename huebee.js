@@ -27,7 +27,6 @@ proto.option = function( options ) {
   this.options = extend( this.options, options );
 };
 
-
 proto.create = function() {
   // properties
   var setBGColor = this.options.setBGColor;
@@ -47,6 +46,10 @@ proto.create = function() {
   this.isInputAnchor = this.anchor.nodeName == 'INPUT';
   this.anchor.addEventListener( 'click', this.openIt );
   this.anchor.addEventListener( 'focus', this.openIt );
+  // change event
+  if ( this.isInputAnchor ) {
+    this.anchor.addEventListener( 'input', this.inputInput.bind( this ) );
+  }
   // create element
   var element = this.element = document.createElement('div');
   element.className = 'huebee is-hidden ';
@@ -98,10 +101,14 @@ proto.createCloseButton = function() {
 };
 
 proto.renderColors = function() {
-  // reset swatches
+  // hash of color, h, s, l according to x,y grid position
+  // [x,y] = { color, h, s, l }
   this.swatches = {};
+  // hash of gridX,gridY position according to color
+  // [#09F] = { x, y }
+  this.colorGrid = {};
   this.updateColorModer();
-  //
+
   var shades = this.options.shades;
   var sats = this.options.saturations;
   var hues = this.options.hues;
@@ -112,7 +119,10 @@ proto.renderColors = function() {
     customColors.forEach( function( color, i ) {
       var x = i % hues;
       var y = Math.floor( i/hues );
-      this.addSwatch( color, x, y );
+      var swatch = getSwatch( color );
+      if ( swatch ) {
+        this.addSwatch( swatch, x, y );
+      }
     }.bind( this ) );
   }
 
@@ -126,8 +136,13 @@ proto.renderColors = function() {
   // render grays
   for ( i=0; i < shades+2; i++ ) {
     var lum = 1 - i/(shades+1);
-    var color = this.colorModer( 0, 0, lum );
-    this.addSwatch( color, hues+1, i, 0, 0, lum );
+    var swatch = {
+      color: this.colorModer( 0, 0, lum ),
+      hue: 0,
+      sat: 0,
+      lum: lum,
+    };
+    this.addSwatch( swatch, hues+1, i );
   }
 };
 
@@ -137,25 +152,28 @@ proto.renderColorGrid = function( i, sat, yOffset ) {
   var hue0 = this.options.hue0;
   for ( var row = 0; row < shades; row++ ) {
     for ( var col = 0; col < hues; col++ ) {
-      var hue = Math.round( col * 360/hues + hue0 ) % 360;
-      var lum = 1 - (row+1) / (shades+1);
+      var swatch = {
+        hue: Math.round( col * 360/hues + hue0 ) % 360,
+        sat: sat,
+        lum: 1 - (row+1) / (shades+1),
+      };
+      swatch.color = this.colorModer( swatch.hue, sat, swatch.lum );
       var gridY = row + yOffset;
-      var color = this.colorModer( hue, sat, lum );
-      this.addSwatch( color, col, gridY, hue, sat, lum );
+      this.addSwatch( swatch, col, gridY );
     }
   }
 };
 
-proto.addSwatch = function( color, gridX, gridY, hue, sat, lum ) {
+proto.addSwatch = function( swatch, gridX, gridY ) {
   var gridSize = this.gridSize;
-  this.ctx.fillStyle = color;
+  this.ctx.fillStyle = swatch.color;
   this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
   // add swatch color to hash
-  this.swatches[ gridX + ',' + gridY ] = {
-    color: color,
-    hue: hue,
-    sat: sat,
-    lum: lum,
+  this.swatches[ gridX + ',' + gridY ] = swatch;
+  // add color to colorGrid
+  this.colorGrid[ swatch.color ] = {
+    x: gridX,
+    y: gridY,
   };
 };
 
@@ -293,6 +311,11 @@ proto.elemTransitionend = function( event ) {
   this.remove();
 };
 
+proto.inputInput = function() {
+  var swatch = getSwatch( this.anchor.value );
+  this.selectSwatch( swatch );
+};
+
 // ----- canvas pointer ----- //
 
 proto.canvasPointerDown = function( event, pointer ) {
@@ -317,31 +340,26 @@ proto.canvasPointerChange = function( pointer ) {
   var sy = Math.floor( y / gridSize );
 
   var swatch = this.swatches[ sx + ',' + sy ];
-  if ( !swatch ) {
+  this.selectSwatch( swatch );
+};
+
+proto.selectSwatch = function( swatch ) {
+  var color = swatch && swatch.color;
+  if ( !swatch || color == this.color ) {
     return;
   }
-
+  this.color = color;
   this.hue = swatch.hue;
   this.sat = swatch.sat;
   this.lum = swatch.lum;
   // estimate if color can have dark or white text
   var lightness = this.lum - Math.cos( (this.hue+60) / 180*Math.PI ) * 0.1;
   this.isLight = lightness > 0.5;
-  // position cursor
-  this.cursor.style.left = sx * gridSize + this.canvasOffset.x -
-    this.cursorBorder + 'px';
-  this.cursor.style.top = sy * gridSize + this.canvasOffset.y -
-    this.cursorBorder + 'px';
-
-  this.updateColor( swatch.color );
-};
-
-proto.updateColor = function( color ) {
-  if ( color == this.color ) {
-    return;
-  }
-  // new color
-  this.color = color;
+  // cursor
+  var gridPosition = this.colorGrid[ color ];
+  this.updateCursor( gridPosition );
+  var cursorMethod = gridPosition ? 'remove' : 'add';
+  this.cursor.classList[ cursorMethod ]('is-hidden');
   // set text
   if ( this.options.setText ) {
     var textProp = this.isInputAnchor ? 'value' : 'textContent';
@@ -355,9 +373,28 @@ proto.updateColor = function( color ) {
       elem.style.color = textColor;
     }
   }
-  this.cursor.classList.remove('is-hidden');
   // event
   this.emitEvent( 'change', [ color ] );
+};
+
+proto.updateCursor = function( position ) {
+  if ( !position ) {
+    return;
+  }
+  var gridSize = this.gridSize;
+  var offset = this.canvasOffset;
+  var border = this.cursorBorder;
+  this.cursor.style.left = position.x*gridSize + offset.x - border + 'px';
+  this.cursor.style.top = position.y*gridSize + offset.y - border + 'px';
+};
+
+proto.updateColor = function( color ) {
+  if ( color == this.color ) {
+    return;
+  }
+  // new color
+  this.color = color;
+
 };
 
 // -------------------------- utils -------------------------- //
@@ -401,6 +438,26 @@ function hsl2rgb(h, s, l) {
   return rgb;
 }
 
+function rgb2hsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+
+  var M = Math.max(r, g, b);
+  var m = Math.min(r, g, b);
+  var C = M - m;
+  var L = 0.5*(M + m);
+  var S = (C === 0) ? 0 : C/(1-Math.abs(2*L-1));
+
+  var h;
+  if (C === 0) h = 0; // spec'd as undefined, but usually set to 0
+  else if (M === r) h = ((g-b)/C) % 6;
+  else if (M === g) h = ((b-r)/C) + 2;
+  else if (M === b) h = ((r-g)/C) + 4;
+
+  var H = 60 * h;
+
+  return [H, parseFloat(S), parseFloat(L)];
+}
+
 function rgb2hex( rgb ) {
   var hex = rgb.map( function( value ) {
     value = Math.round( value * 255 );
@@ -416,4 +473,31 @@ function rgb2hex( rgb ) {
 // #123456 -> #135
 function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
+}
+
+// proxy canvas used to check colors
+var proxyCanvas = document.createElement('canvas');
+proxyCanvas.width = 1;
+proxyCanvas.height = 1;
+var proxyCtx = proxyCanvas.getContext('2d');
+
+function getSwatch( color ) {
+  // check that color value is valid
+  proxyCtx.clearRect( 0, 0, 1, 1 );
+  proxyCtx.fillStyle = '#010203'; // reset value
+  proxyCtx.fillStyle = color;
+  proxyCtx.fillRect( 0, 0, 1, 1 );
+  var imageData = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
+  if ( imageData.join(',') == '1,2,3,255' ) {
+    // invalid color
+    return;
+  }
+  // convert rgb to hsl
+  var hsl = rgb2hsl.apply( this, imageData );
+  return {
+    color: color.trim(),
+    hue: hsl[0],
+    sat: hsl[1],
+    lum: hsl[2],
+  };
 }
