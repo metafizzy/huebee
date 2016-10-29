@@ -264,20 +264,14 @@ proto.outsideClose = function( event ) {
   }
 };
 
-var onKeydowns = {
-  13: function() { // enter
-    this.close();
-  },
-  27: function() { // esc
-    this.close();
-  },
+var closeKeydowns = {
+  13: true, // enter
+  27: true, // esc
 };
 
 proto.docKeydown = function( event ) {
-  // console.log( event.keyCode );
-  var onKeydown = onKeydowns[ event.keyCode ];
-  if ( onKeydown ) {
-    onKeydown.call( this );
+  if ( closeKeydowns[ event.keyCode ] ) {
+    this.close();
   }
 };
 
@@ -297,7 +291,6 @@ proto.close = function() {
 
   this.bindOpenEvents( false );
   this.isOpen = false;
-
 };
 
 proto.remove = function() {
@@ -339,8 +332,8 @@ proto.canvasPointerChange = function( pointer ) {
   var x = Math.round( pointer.pageX - this.offset.x );
   var y = Math.round( pointer.pageY - this.offset.y );
   var gridSize = this.gridSize;
-  var sx = Math.floor( x / gridSize );
-  var sy = Math.floor( y / gridSize );
+  var sx = Math.floor( x/gridSize );
+  var sy = Math.floor( y/gridSize );
 
   var swatch = this.swatches[ sx + ',' + sy ];
   this.selectSwatch( swatch );
@@ -368,6 +361,7 @@ proto.selectSwatch = function( swatch ) {
   // cursor
   var gridPosition = this.colorGrid[ color.toUpperCase() ];
   this.updateCursor( gridPosition );
+  // show cursor if color is on the grid
   var cursorMethod = gridPosition ? 'remove' : 'add';
   this.cursor.classList[ cursorMethod ]('is-hidden');
   // set text
@@ -375,6 +369,7 @@ proto.selectSwatch = function( swatch ) {
     var textProp = this.isInputAnchor ? 'value' : 'textContent';
     this.anchor[ textProp ] = color;
   }
+  // set backgrounds
   if ( this.setBGElems ) {
     var textColor = this.isLight ? '#222' : 'white';
     for ( var i=0; i < this.setBGElems.length; i++ ) {
