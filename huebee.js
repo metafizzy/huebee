@@ -223,8 +223,12 @@ proto.open = function() {
   this.updateSizes();
   this.renderColors();
 
+  if ( this.isInputAnchor ) {
+    this.setColor( this.anchor.value );
+  }
+
   this.isOpen = true;
-  // trigger reflow for transtion
+  // trigger reflow for transition
   var h = this.element.offsetHeight;
   this.element.classList.remove('is-hidden');
 };
@@ -312,8 +316,7 @@ proto.elemTransitionend = function( event ) {
 };
 
 proto.inputInput = function() {
-  var swatch = getSwatch( this.anchor.value );
-  this.selectSwatch( swatch );
+  this.setColor( this.anchor.value );
 };
 
 // ----- canvas pointer ----- //
@@ -340,6 +343,13 @@ proto.canvasPointerChange = function( pointer ) {
   var sy = Math.floor( y / gridSize );
 
   var swatch = this.swatches[ sx + ',' + sy ];
+  this.selectSwatch( swatch );
+};
+
+// ----- select ----- //
+
+proto.setColor = function( color ) {
+  var swatch = getSwatch( color );
   this.selectSwatch( swatch );
 };
 
