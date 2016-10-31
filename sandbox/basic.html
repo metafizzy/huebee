@@ -76,7 +76,6 @@ var hueb = new Huebee( colorInput1, {
   customColors: [ '#C25', 'red',  'transparent',
     '#EA0', '#19F', 'foobar', '#E5A', 'gray', 'darkgreen',
     'yellow', '#F90', '#8C8' ],
-  mode: 'roundHex',
   hues: 7,
   shades: 7,
   saturations: 1,
@@ -90,7 +89,6 @@ hueb.on( 'change', function( color ) {
 });
 
 new Huebee( document.querySelector('.color-input2'), {
-  mode: 'roundHex',
   hues: 18,
   shades: 7,
   saturations: 2,
@@ -99,7 +97,6 @@ new Huebee( document.querySelector('.color-input2'), {
 })
 
 new Huebee( document.querySelector('.color-button1'), {
-  mode: 'roundHex',
   setBGColor: '.color-button1-bg',
   setText: '.color-button1-bg',
 })

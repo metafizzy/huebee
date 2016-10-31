@@ -16,7 +16,7 @@ Huebee.defaults = {
   hue0: 0,
   shades: 5,
   saturations: 3,
-  mode: 'hsl',
+  mode: 'shortHex',
   setText: true,
   setBGColor: false,
 };
@@ -188,7 +188,7 @@ var colorModers = {
     return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
   },
   hex: hsl2hex,
-  'roundHex': function( h, s, l ) {
+  shortHex: function( h, s, l ) {
     var hex = hsl2hex( h, s, l );
     return roundHex( hex );
   }
@@ -517,6 +517,8 @@ function rgb2hex( rgb ) {
 }
 
 // #123456 -> #135
+// grab first digit from hex
+// not mathematically accurate, but makes for better palette
 function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
 }
