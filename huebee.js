@@ -171,7 +171,7 @@ proto.renderColorGrid = function( i, sat, yOffset ) {
 proto.addSwatch = function( swatch, gridX, gridY ) {
   var gridSize = this.gridSize;
   this.ctx.fillStyle = swatch.color;
-  this.ctx.fillRect( gridX * gridSize, gridY * gridSize, gridSize, gridSize );
+  this.ctx.fillRect( gridX*gridSize, gridY*gridSize, gridSize, gridSize );
   // add swatch color to hash
   this.swatches[ gridX + ',' + gridY ] = swatch;
   // add color to colorGrid
@@ -207,18 +207,19 @@ proto.open = function() {
   if ( this.isOpen ) {
     return;
   }
-  this.element.style.left = this.anchor.offsetLeft + 'px';
-  this.element.style.top = this.anchor.offsetTop + this.anchor.offsetHeight +
-    'px';
+  var anchor = this.anchor;
+  var elem = this.element;
+  elem.style.left = anchor.offsetLeft + 'px';
+  elem.style.top = anchor.offsetTop + anchor.offsetHeight + 'px';
   this.bindOpenEvents( true );
-  this.element.removeEventListener( 'transitionend', this.onElemTransitionend );
+  elem.removeEventListener( 'transitionend', this.onElemTransitionend );
   // add canvas to DOM
-  this.anchor.parentNode.insertBefore( this.element, this.anchor.nextSibling );
+  anchor.parentNode.insertBefore( elem, anchor.nextSibling );
   // measurements
-  var duration = getComputedStyle( this.element ).transitionDuration;
+  var duration = getComputedStyle( elem ).transitionDuration;
   this.hasTransition = duration && duration != 'none' && parseFloat( duration );
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderWidth, 10 );
-  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder * 2 );
+  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder*2 );
   this.canvasOffset = {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
@@ -228,13 +229,13 @@ proto.open = function() {
   this.renderColors();
 
   if ( this.isInputAnchor ) {
-    this.setColor( this.anchor.value );
+    this.setColor( anchor.value );
   }
 
   this.isOpen = true;
   // trigger reflow for transition
-  var h = this.element.offsetHeight;
-  this.element.classList.remove('is-hidden');
+  var h = elem.offsetHeight;
+  elem.classList.remove('is-hidden');
 };
 
 proto.bindOpenEvents = function( isAdd ) {
@@ -443,6 +444,34 @@ if ( readyState == 'complete' || readyState == 'interactive' ) {
   document.addEventListener( 'DOMContentLoaded', htmlInit );
 }
 
+// -------------------------- getSwatch -------------------------- //
+
+// proxy canvas used to check colors
+var proxyCanvas = document.createElement('canvas');
+proxyCanvas.width = proxyCanvas.height = 1;
+var proxyCtx = proxyCanvas.getContext('2d');
+
+function getSwatch( color ) {
+  // check that color value is valid
+  proxyCtx.clearRect( 0, 0, 1, 1 );
+  proxyCtx.fillStyle = '#010203'; // reset value
+  proxyCtx.fillStyle = color;
+  proxyCtx.fillRect( 0, 0, 1, 1 );
+  var imageData = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
+  if ( imageData.join(',') == '1,2,3,255' ) {
+    // invalid color
+    return;
+  }
+  // convert rgb to hsl
+  var hsl = rgb2hsl.apply( this, imageData );
+  return {
+    color: color.trim(),
+    hue: hsl[0],
+    sat: hsl[1],
+    lum: hsl[2],
+  };
+}
+
 // -------------------------- utils -------------------------- //
 
 function extend( a, b ) {
@@ -523,29 +552,4 @@ function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
 }
 
-// proxy canvas used to check colors
-var proxyCanvas = document.createElement('canvas');
-proxyCanvas.width = 1;
-proxyCanvas.height = 1;
-var proxyCtx = proxyCanvas.getContext('2d');
 
-function getSwatch( color ) {
-  // check that color value is valid
-  proxyCtx.clearRect( 0, 0, 1, 1 );
-  proxyCtx.fillStyle = '#010203'; // reset value
-  proxyCtx.fillStyle = color;
-  proxyCtx.fillRect( 0, 0, 1, 1 );
-  var imageData = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
-  if ( imageData.join(',') == '1,2,3,255' ) {
-    // invalid color
-    return;
-  }
-  // convert rgb to hsl
-  var hsl = rgb2hsl.apply( this, imageData );
-  return {
-    color: color.trim(),
-    hue: hsl[0],
-    sat: hsl[1],
-    lum: hsl[2],
-  };
-}
