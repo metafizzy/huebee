@@ -411,6 +411,38 @@ proto.updateCursor = function( position ) {
   this.cursor.style.top = position.y*gridSize + offset.y - border + 'px';
 };
 
+// -------------------------- htmlInit -------------------------- //
+
+var console = window.console;
+
+function htmlInit() {
+  var elems = document.querySelectorAll('[data-huebee]');
+  for ( var i=0; i < elems.length; i++ ) {
+    var elem = elems[i];
+    var attr = elem.getAttribute('data-huebee');
+    var options;
+    try {
+      options = attr && JSON.parse( attr );
+    } catch ( error ) {
+      // log error, do not initialize
+      if ( console ) {
+        console.error( 'Error parsing data-huebee on ' + elem.className +
+          ': ' + error );
+      }
+      continue;
+    }
+    // initialize
+    new Huebee( elem, options );
+  }
+}
+
+var readyState = document.readyState;
+if ( readyState == 'complete' || readyState == 'interactive' ) {
+  htmlInit();
+} else {
+  document.addEventListener( 'DOMContentLoaded', htmlInit );
+}
+
 // -------------------------- utils -------------------------- //
 
 function extend( a, b ) {
