@@ -37,8 +37,9 @@ body, input {
 
 .patch {
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
   border: 1px solid #CCC;
 }
 </style>
@@ -55,9 +56,9 @@ body, input {
 
 <p>
   <button class="color-button color-button1 color-button1-bg"></button>
-  <span class="patch color-button1-bg"></span>
-  <span class="patch color-button1-bg"></span>
-  <span class="patch color-button1-bg"></span>
+  <span class="patch color-button1-bg">1</span>
+  <span class="patch color-button1-bg">2</span>
+  <span class="patch color-button1-bg">3</span>
 </p>
 
 <script src="../bower_components/ev-emitter/ev-emitter.js"></script>
@@ -95,6 +96,7 @@ new Huebee( document.querySelector('.color-input2'), {
 new Huebee( document.querySelector('.color-button1'), {
   mode: 'roundHex',
   setBGColor: '.color-button1-bg',
+  setText: '.color-button1-bg',
 })
 </script>
 

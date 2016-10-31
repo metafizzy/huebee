@@ -29,12 +29,8 @@ proto.option = function( options ) {
 
 proto.create = function() {
   // properties
-  var setBGColor = this.options.setBGColor;
-  if ( setBGColor === true ) {
-    this.setBGElems = [ this.anchor ];
-  } else if ( typeof setBGColor == 'string' ) {
-    this.setBGElems = document.querySelectorAll( setBGColor );
-  }
+  this.setBGElems = this.getSetElems( this.options.setBGColor );
+  this.setTextElems = this.getSetElems( this.options.setText );
   // events
   // HACK: this is getting ugly
   this.outsideCloseIt = this.outsideClose.bind( this );
@@ -71,6 +67,14 @@ proto.create = function() {
   var parentStyle = getComputedStyle( this.anchor.parentNode );
   if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
     this.anchor.parentNode.style.position = 'relative';
+  }
+};
+
+proto.getSetElems = function( option ) {
+  if ( option === true ) {
+    return [ this.anchor ];
+  } else if ( typeof option == 'string' ) {
+    return document.querySelectorAll( option );
   }
 };
 
@@ -336,21 +340,22 @@ proto.canvasPointerChange = function( pointer ) {
   var sy = Math.floor( y/gridSize );
 
   var swatch = this.swatches[ sx + ',' + sy ];
-  this.selectSwatch( swatch );
+  this.setSwatch( swatch );
 };
 
 // ----- select ----- //
 
 proto.setColor = function( color ) {
   var swatch = getSwatch( color );
-  this.selectSwatch( swatch );
+  this.setSwatch( swatch );
 };
 
-proto.selectSwatch = function( swatch ) {
+proto.setSwatch = function( swatch ) {
   var color = swatch && swatch.color;
   if ( !swatch || color == this.color ) {
     return;
   }
+  // color properties
   this.color = color;
   this.hue = swatch.hue;
   this.sat = swatch.sat;
@@ -361,28 +366,41 @@ proto.selectSwatch = function( swatch ) {
   // cursor
   var gridPosition = this.colorGrid[ color.toUpperCase() ];
   this.updateCursor( gridPosition );
-  // show cursor if color is on the grid
-  var cursorMethod = gridPosition ? 'remove' : 'add';
-  this.cursor.classList[ cursorMethod ]('is-hidden');
-  // set text
-  if ( this.options.setText ) {
-    var textProp = this.isInputAnchor ? 'value' : 'textContent';
-    this.anchor[ textProp ] = color;
-  }
-  // set backgrounds
-  if ( this.setBGElems ) {
-    var textColor = this.isLight ? '#222' : 'white';
-    for ( var i=0; i < this.setBGElems.length; i++ ) {
-      var elem = this.setBGElems[i];
-      elem.style.backgroundColor = color;
-      elem.style.color = textColor;
-    }
-  }
+  // set texts & backgrounds
+  this.setTexts();
+  this.setBackgrounds();
   // event
   this.emitEvent( 'change', [ color ] );
 };
 
+proto.setTexts = function() {
+  if ( !this.setTextElems ) {
+    return;
+  }
+  for ( var i=0; i < this.setTextElems.length; i++ ) {
+    var elem = this.setTextElems[i];
+    var property = elem.nodeName == 'INPUT' ? 'value' : 'textContent';
+    elem[ property ] = this.color;
+  }
+};
+
+proto.setBackgrounds = function() {
+  if ( !this.setBGElems ) {
+    return;
+  }
+  var textColor = this.isLight ? '#222' : 'white';
+  for ( var i=0; i < this.setBGElems.length; i++ ) {
+    var elem = this.setBGElems[i];
+    elem.style.backgroundColor = this.color;
+    elem.style.color = textColor;
+  }
+};
+
 proto.updateCursor = function( position ) {
+  // show cursor if color is on the grid
+  var classMethod = position ? 'remove' : 'add';
+  this.cursor.classList[ classMethod ]('is-hidden');
+
   if ( !position ) {
     return;
   }
@@ -391,15 +409,6 @@ proto.updateCursor = function( position ) {
   var border = this.cursorBorder;
   this.cursor.style.left = position.x*gridSize + offset.x - border + 'px';
   this.cursor.style.top = position.y*gridSize + offset.y - border + 'px';
-};
-
-proto.updateColor = function( color ) {
-  if ( color == this.color ) {
-    return;
-  }
-  // new color
-  this.color = color;
-
 };
 
 // -------------------------- utils -------------------------- //
