@@ -113,7 +113,7 @@ proto.createCloseButton = function() {
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
   var path = document.createElementNS( svgURI, 'path');
-  path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7, L 7,17' );
+  path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7 L 7,17' );
   path.setAttribute( 'class', 'huebee__close-button__x' );
   svg.appendChild( path );
   svg.addEventListener( 'click', this.closeIt );
@@ -243,12 +243,6 @@ proto.open = function() {
   // measurements
   var duration = getComputedStyle( elem ).transitionDuration;
   this.hasTransition = duration && duration != 'none' && parseFloat( duration );
-  this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderWidth, 10 );
-  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder*2 );
-  this.canvasOffset = {
-    x: this.canvas.offsetLeft,
-    y: this.canvas.offsetTop,
-  };
 
   this.updateSizes();
   this.renderColors();
@@ -276,6 +270,13 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+
+  this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderTopWidth, 10 );
+  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder*2 );
+  this.canvasOffset = {
+    x: this.canvas.offsetLeft,
+    y: this.canvas.offsetTop,
+  };
   var height = Math.max( shades*sats + this.satY, shades+2 );
   this.canvas.width = this.gridSize * (hues+2);
   this.canvas.height = this.gridSize * height;
