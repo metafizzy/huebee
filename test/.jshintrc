@@ -1,0 +1,9 @@
+{
+  "unused": true,
+  "undef": true,
+  "browser": true,
+  "globals": {
+    "Huebee": false,
+    "QUnit": false
+  }
+}

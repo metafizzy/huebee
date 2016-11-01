@@ -2,6 +2,13 @@
 /*globals Unipointer, EvEmitter */
 
 function Huebee( anchor, options ) {
+  // anchor
+  if ( typeof anchor == 'string' ) {
+    anchor = document.querySelector( anchor );
+  }
+  if ( !anchor ) {
+    throw 'Bad element for Huebee: ' + anchor;
+  }
   this.anchor = anchor;
   // options
   this.options = {};
@@ -68,6 +75,15 @@ proto.create = function() {
   if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
     this.anchor.parentNode.style.position = 'relative';
   }
+
+  // satY
+  var hues = this.options.hues;
+  var customColors = this.options.customColors;
+  var customLength = customColors && customColors.length;
+  // y position where saturation grid starts
+  this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
+  // colors
+  this.updateColors();
 };
 
 proto.getSetElems = function( option ) {
@@ -104,7 +120,7 @@ proto.createCloseButton = function() {
   this.container.appendChild( svg );
 };
 
-proto.renderColors = function() {
+proto.updateColors = function() {
   // hash of color, h, s, l according to x,y grid position
   // [x,y] = { color, h, s, l }
   this.swatches = {};
@@ -134,7 +150,7 @@ proto.renderColors = function() {
   for ( var i=0; i < sats; i++ ) {
     var sat = 1 - i/sats;
     var yOffset = shades*i + this.satY;
-    this.renderColorGrid( i, sat, yOffset );
+    this.updateSaturationGrid( i, sat, yOffset );
   }
 
   // render grays
@@ -150,7 +166,7 @@ proto.renderColors = function() {
   }
 };
 
-proto.renderColorGrid = function( i, sat, yOffset ) {
+proto.updateSaturationGrid = function( i, sat, yOffset ) {
   var shades = this.options.shades;
   var hues = this.options.hues;
   var hue0 = this.options.hue0;
@@ -169,9 +185,6 @@ proto.renderColorGrid = function( i, sat, yOffset ) {
 };
 
 proto.addSwatch = function( swatch, gridX, gridY ) {
-  var gridSize = this.gridSize;
-  this.ctx.fillStyle = swatch.color;
-  this.ctx.fillRect( gridX*gridSize, gridY*gridSize, gridSize, gridSize );
   // add swatch color to hash
   this.swatches[ gridX + ',' + gridY ] = swatch;
   // add color to colorGrid
@@ -196,6 +209,18 @@ var colorModers = {
 
 proto.updateColorModer = function() {
   this.colorModer = colorModers[ this.options.mode ] || colorModers.hsl;
+};
+
+proto.renderColors = function() {
+  var gridSize = this.gridSize;
+  for ( var position in this.swatches ) {
+    var swatch = this.swatches[ position ];
+    var duple = position.split(',');
+    var gridX = duple[0];
+    var gridY = duple[1];
+    this.ctx.fillStyle = swatch.color;
+    this.ctx.fillRect( gridX*gridSize, gridY*gridSize, gridSize, gridSize );
+  }
 };
 
 // ----- events ----- //
@@ -251,10 +276,6 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
-  var customColors = this.options.customColors;
-  var customLength = customColors && customColors.length;
-  // y position where saturation grid starts
-  this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
   var height = Math.max( shades*sats + this.satY, shades+2 );
   this.canvas.width = this.gridSize * (hues+2);
   this.canvas.height = this.gridSize * height;
@@ -321,12 +342,16 @@ proto.inputInput = function() {
 
 proto.canvasPointerDown = function( event, pointer ) {
   event.preventDefault();
+  this.updateOffset();
+  this.canvasPointerChange( pointer );
+};
+
+proto.updateOffset = function() {
   var boundingRect = this.canvas.getBoundingClientRect();
   this.offset = {
     x: boundingRect.left + window.pageXOffset,
     y: boundingRect.top + window.pageYOffset,
   };
-  this.canvasPointerChange( pointer );
 };
 
 proto.canvasPointerMove = function( event, pointer ) {
@@ -371,7 +396,7 @@ proto.setSwatch = function( swatch ) {
   this.setTexts();
   this.setBackgrounds();
   // event
-  this.emitEvent( 'change', [ color ] );
+  this.emitEvent( 'change', [ color, swatch.hue, swatch.sat, swatch.lum ] );
 };
 
 proto.setTexts = function() {
