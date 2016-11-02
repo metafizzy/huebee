@@ -222,7 +222,7 @@ proto.updateColorModer = function() {
 };
 
 proto.renderColors = function() {
-  var gridSize = this.gridSize;
+  var gridSize = this.gridSize*2;
   for ( var position in this.swatches ) {
     var swatch = this.swatches[ position ];
     var duple = position.split(',');
@@ -291,8 +291,10 @@ proto.updateSizes = function() {
     y: this.canvas.offsetTop,
   };
   var height = Math.max( shades*sats + this.satY, shades+2 );
-  this.canvas.width = this.gridSize * (hues+2);
-  this.canvas.height = this.gridSize * height;
+  var width = this.gridSize * (hues+2);
+  this.canvas.width = width * 2;
+  this.canvas.style.width = width + 'px';
+  this.canvas.height = this.gridSize * height * 2;
 };
 
 // close if target is not anchor or element
