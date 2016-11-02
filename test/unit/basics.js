@@ -1,6 +1,6 @@
 QUnit.test( 'basics', function( assert ) {
 
-  var hueb = window.hueb = new Huebee( '.basics', {
+  var hueb = new Huebee( '.basics', {
     hues: 6,
     saturations: 2,
     setBGColor: true,
@@ -47,6 +47,14 @@ QUnit.test( 'basics', function( assert ) {
   assert.equal( hueb.lum, 0.5, 'lum' );
   assert.equal( elem.textContent, '#888', 'element text set' );
   assert.equal( elem.style.backgroundColor, 'rgb(136, 136, 136)', 'element background color set' );
+
+  // setColor
+  hueb.setColor('#c25');
+  assert.equal( hueb.color, '#c25', 'setColor() sets color' );
+  assert.equal( elem.textContent, '#c25', 'setColor() element text set' );
+  hueb.setColor('foobar');
+  assert.equal( hueb.color, '#c25', 'setColor() with invalid color does not set invalid color' );
+  assert.equal( elem.textContent, '#c25', 'setColor() element text set' );
 
   hueb.close();
 

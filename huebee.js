@@ -3,9 +3,7 @@
 
 function Huebee( anchor, options ) {
   // anchor
-  if ( typeof anchor == 'string' ) {
-    anchor = document.querySelector( anchor );
-  }
+  anchor = getQueryElement( anchor );
   if ( !anchor ) {
     throw 'Bad element for Huebee: ' + anchor;
   }
@@ -34,7 +32,16 @@ proto.option = function( options ) {
   this.options = extend( this.options, options );
 };
 
+// globally unique identifiers
+var GUID = 0;
+// internal store of all Colcade intances
+var instances = {};
+
 proto.create = function() {
+  // add guid for Colcade.data
+  var guid = this.guid = ++GUID;
+  this.anchor.huebeeGUID = guid;
+  instances[ guid ] = this; // associate via id
   // properties
   this.setBGElems = this.getSetElems( this.options.setBGColor );
   this.setTextElems = this.getSetElems( this.options.setText );
@@ -136,12 +143,14 @@ proto.updateColors = function() {
 
   // render custom colors
   if ( customColors && customColors.length ) {
-    customColors.forEach( function( color, i ) {
-      var x = i % hues;
-      var y = Math.floor( i/hues );
+    var customI = 0;
+    customColors.forEach( function( color ) {
+      var x = customI % hues;
+      var y = Math.floor( customI/hues );
       var swatch = getSwatch( color );
       if ( swatch ) {
         this.addSwatch( swatch, x, y );
+        customI++;
       }
     }.bind( this ) );
   }
@@ -470,6 +479,14 @@ if ( readyState == 'complete' || readyState == 'interactive' ) {
   document.addEventListener( 'DOMContentLoaded', htmlInit );
 }
 
+// -------------------------- Huebee.data -------------------------- //
+
+Huebee.data = function( elem ) {
+  elem = getQueryElement( elem );
+  var id = elem && elem.huebeeGUID;
+  return id && instances[ id ];
+};
+
 // -------------------------- getSwatch -------------------------- //
 
 // proxy canvas used to check colors
@@ -505,6 +522,13 @@ function extend( a, b ) {
     a[ prop ] = b[ prop ];
   }
   return a;
+}
+
+function getQueryElement( elem ) {
+  if ( typeof elem == 'string' ) {
+    elem = document.querySelector( elem );
+  }
+  return elem;
 }
 
 function hsl2hex( h, s, l ) {

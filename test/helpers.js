@@ -9,7 +9,7 @@ Huebee.prototype.getColorCount = function() {
 Huebee.prototype.fakeSelect = function( gridX, gridY ) {
   this.updateOffset();
   this.canvasPointerChange({
-    pageX: ( gridX+0.5 ) * hueb.gridSize + hueb.offset.x,
-    pageY: ( gridY+0.5 ) * hueb.gridSize + hueb.offset.y,
+    pageX: ( gridX+0.5 ) * this.gridSize + this.offset.x,
+    pageY: ( gridY+0.5 ) * this.gridSize + this.offset.y,
   });
 };

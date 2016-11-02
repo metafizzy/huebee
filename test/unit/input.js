@@ -15,4 +15,6 @@ QUnit.test( 'input', function( assert ) {
   input2.focus();
   assert.notOk( hueb.isOpen, 'huebee is closed if other input is focused' );
 
+  input2.blur();
+
 });
