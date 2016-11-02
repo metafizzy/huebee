@@ -14,6 +14,16 @@
   .huebee {
     transition: none;
   }
+
+  .css-huebee .huebee__cursor {
+    width: 20px;
+    height: 20px;
+  }
+
+  .css-huebee.is-big .huebee__cursor {
+    width: 30px;
+    height: 30px;
+  }
   </style>
 
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
@@ -26,6 +36,7 @@
   <script src="unit/input.js"></script>
   <script src="unit/set-multiples.js"></script>
   <script src="unit/custom-colors.js"></script>
+  <script src="unit/css.js"></script>
   <script src="unit/html-init.js"></script>
 
 </head>
@@ -58,6 +69,10 @@
   <h2>custom colors</h2>
 
   <div class="custom-colors">&nbsp;</div>
+
+  <h2>css</h2>
+
+  <div class="css">css</div>
 
   <h2>html init</h2>
 
