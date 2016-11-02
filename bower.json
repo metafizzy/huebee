@@ -6,6 +6,7 @@
   "description": "color picker",
   "main": "huebee.js",
   "dependencies": {
+    "ev-emitter": "^1.0.3",
     "unipointer": "^2.1.0"
   },
   "keywords": [
@@ -20,6 +21,8 @@
     "bower_components",
     "test",
     "tests",
+    "sandbox",
+    "gulpfile.js",
     "package.json"
   ]
 }

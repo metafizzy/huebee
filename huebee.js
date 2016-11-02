@@ -1,5 +1,44 @@
+/**
+ * Huebee v0.1.0
+ * 1-click color picker
+ *
+ * Licensed GPLv3 for open source use
+ * or Huebee Commercial License for commercial use
+ *
+ * http://huebee.metafizzy.co
+ * Copyright 2016 Metafizzy
+ */
+
 /*jshint browser: true, unused: true, undef: true */
-/*globals Unipointer, EvEmitter */
+
+( function( window, factory ) {
+  // universal module definition
+  /* globals define, module, require */
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+      'ev-emitter/ev-emitter',
+      'unipointer/unipointer',
+    ], function( EvEmitter, Unipointer ) {
+      return factory( window, EvEmitter, Unipointer );
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('ev-emitter'),
+      require('unipointer')
+    );
+  } else {
+    // browser global
+    window.Huebee = factory(
+      window,
+      window.EvEmitter,
+      window.Unipointer
+    );
+  }
+
+}( window, function factory( window, EvEmitter, Unipointer ) {
 
 function Huebee( anchor, options ) {
   // anchor
@@ -614,4 +653,4 @@ function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
 }
 
-
+}));
