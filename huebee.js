@@ -91,6 +91,7 @@ proto.create = function() {
   this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
   // colors
   this.updateColors();
+  this.setAnchorColor();
 };
 
 proto.getSetElems = function( option ) {
@@ -232,6 +233,12 @@ proto.renderColors = function() {
   }
 };
 
+proto.setAnchorColor = function() {
+  if ( this.isInputAnchor ) {
+    this.setColor( this.anchor.value );
+  }
+};
+
 // ----- events ----- //
 
 var docElem = document.documentElement;
@@ -253,14 +260,11 @@ proto.open = function() {
   var duration = getComputedStyle( elem ).transitionDuration;
   this.hasTransition = duration && duration != 'none' && parseFloat( duration );
 
+  this.isOpen = true;
   this.updateSizes();
   this.renderColors();
+  this.setAnchorColor();
 
-  if ( this.isInputAnchor ) {
-    this.setColor( anchor.value );
-  }
-
-  this.isOpen = true;
   // trigger reflow for transition
   var h = elem.offsetHeight;
   elem.classList.remove('is-hidden');
@@ -388,9 +392,10 @@ proto.setColor = function( color ) {
 
 proto.setSwatch = function( swatch ) {
   var color = swatch && swatch.color;
-  if ( !swatch || color == this.color ) {
+  if ( !swatch ) {
     return;
   }
+  var wasSameColor = color == this.color;
   // color properties
   this.color = color;
   this.hue = swatch.hue;
@@ -406,7 +411,9 @@ proto.setSwatch = function( swatch ) {
   this.setTexts();
   this.setBackgrounds();
   // event
-  this.emitEvent( 'change', [ color, swatch.hue, swatch.sat, swatch.lum ] );
+  if ( !wasSameColor ) {
+    this.emitEvent( 'change', [ color, swatch.hue, swatch.sat, swatch.lum ] );
+  }
 };
 
 proto.setTexts = function() {
@@ -433,6 +440,9 @@ proto.setBackgrounds = function() {
 };
 
 proto.updateCursor = function( position ) {
+  if ( !this.isOpen ) {
+    return;
+  }
   // show cursor if color is on the grid
   var classMethod = position ? 'remove' : 'add';
   this.cursor.classList[ classMethod ]('is-hidden');
