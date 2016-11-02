@@ -9,6 +9,13 @@
   <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" />
   <link rel="stylesheet" href="../huebee.css" />
 
+  <style>
+  /* HACK disable transition to open & close synchronously */
+  .huebee {
+    transition: none;
+  }
+  </style>
+
   <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
   <script src="../node_modules/ev-emitter/ev-emitter.js"></script>
   <script src="../node_modules/unipointer/unipointer.js"></script>
@@ -16,6 +23,8 @@
   <script src="helpers.js"></script>
 
   <script src="unit/basics.js"></script>
+  <script src="unit/input.js"></script>
+  <script src="unit/set-multiples.js"></script>
 
 </head>
 <body>
@@ -27,6 +36,21 @@
   <h2>basics</h2>
 
   <div class="basics">basics</div>
+
+  <h2>input</h2>
+
+  <input class="input1" value="#F90" />
+  <input class="input2" />
+
+  <h2>set multiples</h2>
+
+  <div class="set-multiples set-multiples-elem"></div>
+
+  <ul class="set-multiples-list">
+    <li class="set-multiples-elem"></li>
+    <li class="set-multiples-elem"></li>
+    <li class="set-multiples-elem"></li>
+  </ul>
 
 </body>
 </html>

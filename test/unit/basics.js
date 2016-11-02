@@ -48,4 +48,8 @@ QUnit.test( 'basics', function( assert ) {
   assert.equal( elem.textContent, '#888', 'element text set' );
   assert.equal( elem.style.backgroundColor, 'rgb(136, 136, 136)', 'element background color set' );
 
+  hueb.close();
+
+  assert.notOk( document.body.contains( hueb.element ), 'element removed after close' );
+
 });
