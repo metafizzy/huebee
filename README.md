@@ -1,6 +1,6 @@
 # Huebee
 
-_🐝 1-click color picker_
+🐝 _1-click color picker_
 
 See [huebee.metafizzy.co](http://huebee.metafizzy.co) for complete docs and demos.
 
@@ -21,13 +21,13 @@ Link directly to Huebee files on [unpkg](https://unpkg.com).
 
 ``` html
 <link rel="stylesheet" href="https://unpkg.com/huebee@1/dist/huebee.min.css">
-<!-- or -=>
+<!-- or -->
 <link rel="stylesheet" href="https://unpkg.com/huebee@1/dist/huebee.css">
 ```
 
 ``` html
 <script src="https://unpkg.com/huebee@1/dist/huebee.pkgd.min.js"></script>
-<!-- or -=>
+<!-- or -->
 <script src="https://unpkg.com/huebee@1/dist/huebee.pkgd.js"></script>
 ```
 
@@ -70,7 +70,7 @@ var hueb = new Huebee( '.color-input', {
 });
 
 // or use element
-var colorInput = document.querSelector('.color-input);
+var colorInput = document.querSelector('.color-input');
 var hueb = new Huebee( colorInput, {
   // options
   setBGColor: true,
@@ -142,19 +142,18 @@ var hueb = new Huebee( '.color-input', {
 });
 ```
 
-### CSS
+## CSS
 
 Set the size of the color grid with by setting the size of `.huebee__cursor` in CSS.
 
 ``` css
-/* all huebees will have 20x20 px grid */
 .huebee__cursor {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 ```
 
-Style Huebee however you like with your own CSS
+Style Huebee with your own CSS.
 
 ``` css
 .huebee {
@@ -182,7 +181,7 @@ Style Huebee however you like with your own CSS
 
 Use `className` option for specificity.
 
-```
+``` html
 <div class="dark-swatch" data-huebee='{ "className": "dark-picker" }'></div>
 <div class="light-swatch" data-huebee='{ "className": "light-picker" }'></div>
 ```
@@ -205,18 +204,18 @@ var hueb = new Huebee( element, options );
 
 ### Properties
 
-```
+``` js
 hueb.color // => #F00
 // {String} - text color value
 
 hueb.hue // -> 0
-// {Number} - angle of hue of color 0...360
+// {Number} - angle of hue of color, 0...360
 
 hueb.sat // -> 1
-// {Number} - saturation 0...1
+// {Number} - saturation of color, 0...1
 
 hueb.lum // -> 0.5
-// {Number} - luminance 0...1
+// {Number} - luminance of color, 0...1
 ```
 
 ### Methods
