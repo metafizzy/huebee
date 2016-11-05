@@ -653,4 +653,8 @@ function roundHex( hex ) {
   return '#' + hex[1] + hex[3] + hex[5];
 }
 
+// --------------------------  -------------------------- //
+
+return Huebee;
+
 }));
