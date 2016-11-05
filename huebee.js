@@ -93,15 +93,19 @@ proto.create = function() {
   this.onElemTransitionend = this.elemTransitionend.bind( this );
   // open events
   this.isInputAnchor = this.anchor.nodeName == 'INPUT';
-  this.anchor.addEventListener( 'click', this.openIt );
-  this.anchor.addEventListener( 'focus', this.openIt );
+  if ( !this.options.staticOpen ) {
+    this.anchor.addEventListener( 'click', this.openIt );
+    this.anchor.addEventListener( 'focus', this.openIt );
+  }
   // change event
   if ( this.isInputAnchor ) {
     this.anchor.addEventListener( 'input', this.inputInput.bind( this ) );
   }
   // create element
   var element = this.element = document.createElement('div');
-  element.className = 'huebee is-hidden ';
+  element.className = 'huebee ';
+  element.className += this.options.staticOpen ? 'is-static-open ' :
+    'is-hidden ';
   element.className += this.options.className || '';
   // create container
   var container = this.container = document.createElement('div');
@@ -117,9 +121,11 @@ proto.create = function() {
 
   element.appendChild( container );
   // set relative position on parent
-  var parentStyle = getComputedStyle( this.anchor.parentNode );
-  if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
-    this.anchor.parentNode.style.position = 'relative';
+  if ( !this.options.staticOpen ) {
+    var parentStyle = getComputedStyle( this.anchor.parentNode );
+    if ( parentStyle.position != 'relative' && parentStyle.position != 'absolute' ) {
+      this.anchor.parentNode.style.position = 'relative';
+    }
   }
 
   // satY
@@ -131,6 +137,9 @@ proto.create = function() {
   // colors
   this.updateColors();
   this.setAnchorColor();
+  if ( this.options.staticOpen ) {
+    this.open();
+  }
 };
 
 proto.getSetElems = function( option ) {
@@ -156,6 +165,9 @@ proto.createCanvas = function() {
 var svgURI = 'http://www.w3.org/2000/svg';
 
 proto.createCloseButton = function() {
+  if ( this.options.staticOpen ) {
+    return;
+  }
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
@@ -289,11 +301,13 @@ proto.open = function() {
   }
   var anchor = this.anchor;
   var elem = this.element;
-  elem.style.left = anchor.offsetLeft + 'px';
-  elem.style.top = anchor.offsetTop + anchor.offsetHeight + 'px';
+  if ( !this.options.staticOpen ) {
+    elem.style.left = anchor.offsetLeft + 'px';
+    elem.style.top = anchor.offsetTop + anchor.offsetHeight + 'px';
+  }
   this.bindOpenEvents( true );
   elem.removeEventListener( 'transitionend', this.onElemTransitionend );
-  // add canvas to DOM
+  // add huebee to DOM
   anchor.parentNode.insertBefore( elem, anchor.nextSibling );
   // measurements
   var duration = getComputedStyle( elem ).transitionDuration;
@@ -310,6 +324,9 @@ proto.open = function() {
 };
 
 proto.bindOpenEvents = function( isAdd ) {
+  if ( this.options.staticOpen ) {
+    return;
+  }
   var method = ( isAdd ? 'add' : 'remove' ) + 'EventListener';
   docElem[ method]( 'mousedown', this.outsideCloseIt );
   docElem[ method]( 'touchstart', this.outsideCloseIt );

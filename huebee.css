@@ -14,6 +14,11 @@ http://huebee.metafizzy.co
   transform: translateY(10px);
 }
 
+.huebee.is-static-open {
+  position: relative;
+  z-index: auto;
+}
+
 .huebee__container {
   position: absolute;
   left: 0;
@@ -22,6 +27,14 @@ http://huebee.metafizzy.co
   background: #EEE;
   border-radius: 5px;
   box-shadow: 0 5px 10px hsla(0, 0%, 0%, 0.3);
+}
+
+.huebee.is-static-open .huebee__container {
+  position: relative;
+  display: inline-block;
+  left: auto;
+  top: auto;
+  box-shadow: none;
 }
 
 .huebee__canvas {
