@@ -4,10 +4,16 @@
     "David DeSandro <desandrocodes@gmail.com>"
   ],
   "description": "color picker",
-  "main": "huebee.js",
+  "main": [
+    "huebee.js",
+    "huebee.css"
+  ],
   "dependencies": {
     "ev-emitter": "^1.0.3",
     "unipointer": "^2.1.0"
+  },
+  "devDependencies": {
+    "qunit": "^2.0.1"
   },
   "keywords": [
     "color",
