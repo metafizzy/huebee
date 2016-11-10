@@ -60,7 +60,7 @@ Huebee.defaults = {
   hue0: 0,
   shades: 5,
   saturations: 3,
-  mode: 'shortHex',
+  notation: 'shortHex',
   setText: true,
   setBGColor: true,
 };
@@ -269,7 +269,7 @@ var colorModers = {
 };
 
 proto.updateColorModer = function() {
-  this.colorModer = colorModers[ this.options.mode ] || colorModers.hsl;
+  this.colorModer = colorModers[ this.options.notation ] || colorModers.shortHex;
 };
 
 proto.renderColors = function() {

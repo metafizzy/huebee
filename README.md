@@ -115,7 +115,7 @@ var hueb = new Huebee( '.color-input', {
   // 3 saturations => [ 100% saturation, 66% saturation, 33% saturation ]
   // default: 3
 
-  mode: 'hex',
+  notation: 'hex',
   // the text syntax of colors
   // values: shortHex, hex, hsl
   // shortHex => #F00, hex => #FF0000, hsl => hsl(0, 100%, 50%)
