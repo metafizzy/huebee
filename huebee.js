@@ -62,7 +62,7 @@ Huebee.defaults = {
   saturations: 3,
   mode: 'shortHex',
   setText: true,
-  setBGColor: false,
+  setBGColor: true,
 };
 
 var proto = Huebee.prototype = Object.create( EvEmitter.prototype );
