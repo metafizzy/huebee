@@ -99,7 +99,7 @@ var hueb = new Huebee( '.color-input', {
   // options
 
   hues: 6,
-  // number of hues are in the color grid
+  // number of hues of the color grid
   // default: 12
 
   hue0: 210,
@@ -107,7 +107,7 @@ var hueb = new Huebee( '.color-input', {
   // default: 0
 
   shades: 7,
-  // number of shades of colors or shades of gray between white and black
+  // number of shades of colors and shades of gray between white and black
   // default: 5
 
   saturations: 2,
@@ -122,20 +122,24 @@ var hueb = new Huebee( '.color-input', {
   // default: shortHex
 
   setText: false,
-  // sets text of elements to color, and sets text color 
+  // sets text of elements to color, and sets text color
   // true => sets text of anchor
   // string, '.color-text' => sets elements that match selector
   // default: true
 
-  setBGColor: true,
+  setBGColor: false,
   // sets background color of elements
   // and text color so text is visible on light or dark colors
   // true => sets background color of anchor
   // string, '.color-bg' => sets elements that match selector
-  // default: false
+  // default: true
 
   customColors: [ '#19F', '#E5A628', 'darkgray', 'hsl(210, 90%, 55%)' ]
   // custom colors added to the top of the grid
+
+  staticOpen: true,
+  // displays open and stays open
+  // default: false
 
   className: 'color-input-picker',
   // class added to Huebee element, useful for CSS
@@ -157,7 +161,7 @@ Style Huebee with your own CSS.
 
 ``` css
 .huebee {
-  transition: none; /* disable reveal/hide transition */ 
+  transition: none; /* disable reveal/hide transition */
 }
 
 .huebee__container {
