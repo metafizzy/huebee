@@ -110,6 +110,14 @@ proto.create = function() {
   // create container
   var container = this.container = document.createElement('div');
   container.className = 'huebee__container';
+  // do not blur if padding clicked
+  function onContainerPointerStart( event ) {
+    if ( event.target == container ) {
+      event.preventDefault();
+    }
+  }
+  container.addEventListener( 'mousedown', onContainerPointerStart );
+  container.addEventListener( 'touchstart', onContainerPointerStart );
   // create canvas
   this.createCanvas();
   // create cursor
