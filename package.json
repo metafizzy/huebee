@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/desandro/huebee/issues"
   },
-  "homepage": "https://github.com/desandro/huebee#readme"
+  "homepage": "http://huebee.buzz",
+  "directories": {
+    "test": "test"
+  }
 }

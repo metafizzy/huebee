@@ -2,7 +2,7 @@
 
 🐝 _1-click color picker_
 
-See [huebee.metafizzy.co](http://huebee.metafizzy.co) for complete docs and demos.
+See [huebee.buzz](http://huebee.buzz) for complete docs and demos.
 
 ## Install
 
@@ -41,13 +41,13 @@ npm: `npm install huebee --save`
 
 ### Commercial license
 
-If you want to use Huebee to develop commercial sites, themes, projects, and applications, the Commercial license is the appropriate license. With this option, your source code is kept proprietary. Purchase a Huebee Commercial License at [huebee.metafizzy.co](http://huebee.metafizzy.co/#commercial-license)
+If you want to use Huebee to develop commercial sites, themes, projects, and applications, the Commercial license is the appropriate license. With this option, your source code is kept proprietary. Purchase a Huebee Commercial License at [huebee.buzz](http://huebee.buzz/#commercial-license)
 
 ### Open source license
 
 If you are creating an open source application under a license compatible with the [GNU GPL license v3](https://www.gnu.org/licenses/gpl-3.0.html), you may use Huebee under the terms of the GPLv3.
 
-[Read more about Huebee's license](http://huebee.metafizzy.co/license.html).
+[Read more about Huebee's license](http://huebee.buzz/license.html).
 
 ## Usage
 

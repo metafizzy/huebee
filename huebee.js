@@ -5,7 +5,7 @@
  * Licensed GPLv3 for open source use
  * or Huebee Commercial License for commercial use
  *
- * http://huebee.metafizzy.co
+ * http://huebee.buzz
  * Copyright 2016 Metafizzy
  */
 
