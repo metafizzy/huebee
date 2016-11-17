@@ -1,5 +1,5 @@
 /**
- * Huebee v0.1.0
+ * Huebee v1.0.0
  * 1-click color picker
  *
  * Licensed GPLv3 for open source use
@@ -179,6 +179,8 @@ proto.createCloseButton = function() {
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
+  svg.setAttribute( 'width', '24' );
+  svg.setAttribute( 'height', '24' );
   var path = document.createElementNS( svgURI, 'path');
   path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7 L 7,17' );
   path.setAttribute( 'class', 'huebee__close-button__x' );
