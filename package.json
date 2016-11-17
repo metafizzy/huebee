@@ -1,6 +1,6 @@
 {
   "name": "huebee",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "1-click color picker",
   "main": "huebee.js",
   "dependencies": {
@@ -10,10 +10,14 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.13",
+    "gulp-jshint": "^2.0.4",
+    "gulp-json-lint": "^0.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-requirejs-optimize": "github:metafizzy/gulp-requirejs-optimize",
     "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.9.4",
     "qunitjs": "^2.0.1"
   },
   "scripts": {
@@ -21,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/desandro/huebee.git"
+    "url": "git+https://github.com/metafizzy/huebee.git"
   },
   "keywords": [
     "color",
@@ -32,7 +36,7 @@
   "author": "David DeSandro",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/desandro/huebee/issues"
+    "url": "https://github.com/metafizzy/huebee/issues"
   },
   "homepage": "http://huebee.buzz",
   "directories": {

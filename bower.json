@@ -3,7 +3,7 @@
   "authors": [
     "David DeSandro <desandrocodes@gmail.com>"
   ],
-  "description": "color picker",
+  "description": "1-click color picker",
   "main": [
     "huebee.js",
     "huebee.css"
