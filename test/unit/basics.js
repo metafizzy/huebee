@@ -37,14 +37,14 @@ QUnit.test( 'basics', function( assert ) {
     assert.ok( true, 'change event triggered');
     assert.equal( color, '#888', 'change event #888 gray swatch selected' );
     assert.equal( sat, 0, 'change event sat' );
-    assert.equal( lum, 0.5, 'change event lum' );
+    assert.ok( Math.abs( lum - 0.5 ) <= 1/30 , 'change event lum' );
   });
 
   hueb.fakeSelect( 7, 3 );
 
   assert.equal( hueb.color, '#888', '#888 gray swatch selected' );
   assert.equal( hueb.sat, 0, 'sat' );
-  assert.equal( hueb.lum, 0.5, 'lum' );
+  assert.ok( Math.abs( hueb.lum - 0.5 ) <= 1/30 , 'lum' );
   assert.equal( elem.textContent, '#888', 'element text set' );
   assert.equal( elem.style.backgroundColor, 'rgb(136, 136, 136)', 'element background color set' );
 
