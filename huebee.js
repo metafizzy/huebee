@@ -578,7 +578,7 @@ function getSwatch( color ) {
   proxyCtx.fillStyle = '#010203'; // reset value
   proxyCtx.fillStyle = color;
   proxyCtx.fillRect( 0, 0, 1, 1 );
-  var imageData = [].slice.call(proxyCtx.getImageData( 0, 0, 1, 1 ).data);
+  var imageData = Array.prototype.slice.call( proxyCtx.getImageData( 0, 0, 1, 1 ).data );
   if ( imageData.join(',') == '1,2,3,255' ) {
     // invalid color
     return;
