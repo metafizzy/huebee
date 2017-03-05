@@ -1,5 +1,5 @@
 /**
- * Huebee v1.0.0
+ * Huebee v1.0.1
  * 1-click color picker
  *
  * Licensed GPLv3 for open source use

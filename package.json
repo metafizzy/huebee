@@ -1,6 +1,6 @@
 {
   "name": "huebee",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "1-click color picker",
   "main": "huebee.js",
   "dependencies": {

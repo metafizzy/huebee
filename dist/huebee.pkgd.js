@@ -1,5 +1,5 @@
 /**
- * Huebee PACKAGED v1.0.0
+ * Huebee PACKAGED v1.0.1
  * 1-click color picker
  *
  * Licensed GPLv3 for open source use
@@ -424,7 +424,7 @@ return Unipointer;
 }));
 
 /**
- * Huebee v1.0.0
+ * Huebee v1.0.1
  * 1-click color picker
  *
  * Licensed GPLv3 for open source use
@@ -604,6 +604,8 @@ proto.createCloseButton = function() {
   var svg = document.createElementNS( svgURI, 'svg');
   svg.setAttribute( 'class', 'huebee__close-button' );
   svg.setAttribute( 'viewBox', '0 0 24 24' );
+  svg.setAttribute( 'width', '24' );
+  svg.setAttribute( 'height', '24' );
   var path = document.createElementNS( svgURI, 'path');
   path.setAttribute( 'd', 'M 7,7 L 17,17 M 17,7 L 7,17' );
   path.setAttribute( 'class', 'huebee__close-button__x' );
@@ -650,12 +652,8 @@ proto.updateColors = function() {
   // render grays
   for ( i=0; i < shades+2; i++ ) {
     var lum = 1 - i/(shades+1);
-    var swatch = {
-      color: this.colorModer( 0, 0, lum ),
-      hue: 0,
-      sat: 0,
-      lum: lum,
-    };
+    var color = this.colorModer( 0, 0, lum );
+    var swatch = getSwatch( color );
     this.addSwatch( swatch, hues+1, i );
   }
 };
@@ -666,12 +664,10 @@ proto.updateSaturationGrid = function( i, sat, yOffset ) {
   var hue0 = this.options.hue0;
   for ( var row = 0; row < shades; row++ ) {
     for ( var col = 0; col < hues; col++ ) {
-      var swatch = {
-        hue: Math.round( col * 360/hues + hue0 ) % 360,
-        sat: sat,
-        lum: 1 - (row+1) / (shades+1),
-      };
-      swatch.color = this.colorModer( swatch.hue, sat, swatch.lum );
+      var hue = Math.round( col * 360/hues + hue0 ) % 360;
+      var lum = 1 - (row+1) / (shades+1);
+      var color = this.colorModer( hue, sat, lum );
+      var swatch = getSwatch( color );
       var gridY = row + yOffset;
       this.addSwatch( swatch, col, gridY );
     }
@@ -893,7 +889,7 @@ proto.setSwatch = function( swatch ) {
   this.sat = swatch.sat;
   this.lum = swatch.lum;
   // estimate if color can have dark or white text
-  var lightness = this.lum - Math.cos( (this.hue+60) / 180*Math.PI ) * 0.1;
+  var lightness = this.lum - Math.cos( (this.hue+70) / 180*Math.PI ) * 0.15;
   this.isLight = lightness > 0.5;
   // cursor
   var gridPosition = this.colorGrid[ color.toUpperCase() ];
@@ -1001,13 +997,15 @@ function getSwatch( color ) {
   proxyCtx.fillStyle = '#010203'; // reset value
   proxyCtx.fillStyle = color;
   proxyCtx.fillRect( 0, 0, 1, 1 );
-  var imageData = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
-  if ( imageData.join(',') == '1,2,3,255' ) {
+  var data = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
+  // convert to array, imageData not array, #10
+  data = [ data[0], data[1], data[2], data[3] ];
+  if ( data.join(',') == '1,2,3,255' ) {
     // invalid color
     return;
   }
   // convert rgb to hsl
-  var hsl = rgb2hsl.apply( this, imageData );
+  var hsl = rgb2hsl.apply( this, data );
   return {
     color: color.trim(),
     hue: hsl[0],
