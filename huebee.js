@@ -6,7 +6,7 @@
  * or Huebee Commercial License for commercial use
  *
  * http://huebee.buzz
- * Copyright 2016 Metafizzy
+ * Copyright 2017 Metafizzy
  */
 
 /*jshint browser: true, unused: true, undef: true */
