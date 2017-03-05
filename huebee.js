@@ -572,13 +572,15 @@ function getSwatch( color ) {
   proxyCtx.fillStyle = '#010203'; // reset value
   proxyCtx.fillStyle = color;
   proxyCtx.fillRect( 0, 0, 1, 1 );
-  var imageData = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
-  if ( imageData.join(',') == '1,2,3,255' ) {
+  var data = proxyCtx.getImageData( 0, 0, 1, 1 ).data;
+  // convert to array, imageData not array, #10
+  data = [ data[0], data[1], data[2], data[3] ];
+  if ( data.join(',') == '1,2,3,255' ) {
     // invalid color
     return;
   }
   // convert rgb to hsl
-  var hsl = rgb2hsl.apply( this, imageData );
+  var hsl = rgb2hsl.apply( this, data );
   return {
     color: color.trim(),
     hue: hsl[0],
