@@ -58,7 +58,7 @@ var hueb = new Huebee( '.color-input', {
 });
 
 // or use element
-var colorInput = document.querSelector('.color-input');
+var colorInput = document.querySelector('.color-input');
 var hueb = new Huebee( colorInput, {
   // options
   setBGColor: true,
