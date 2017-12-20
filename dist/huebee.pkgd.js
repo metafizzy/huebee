@@ -1,12 +1,9 @@
 /**
- * Huebee PACKAGED v1.0.1
+ * Huebee PACKAGED v2.0.0
  * 1-click color picker
- *
- * Licensed GPLv3 for open source use
- * or Huebee Commercial License for commercial use
- *
+ * MIT license
  * http://huebee.buzz
- * Copyright 2016 Metafizzy
+ * Copyright 2018 Metafizzy
  */
 
 /**
@@ -424,14 +421,11 @@ return Unipointer;
 }));
 
 /**
- * Huebee v1.0.1
+ * Huebee v2.0.0
  * 1-click color picker
- *
- * Licensed GPLv3 for open source use
- * or Huebee Commercial License for commercial use
- *
+ * MIT license
  * http://huebee.buzz
- * Copyright 2016 Metafizzy
+ * Copyright 2018 Metafizzy
  */
 
 /*jshint browser: true, unused: true, undef: true */

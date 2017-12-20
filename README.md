@@ -9,26 +9,26 @@ See [huebee.buzz](http://huebee.buzz) for complete docs and demos.
 ### Download
 
 + CSS:
-  - [huebee.min.css](https://unpkg.com/huebee@1/dist/huebee.min.css) minified, or
-  - [huebee.css](https://unpkg.com/flickity@1/dist/huebee.css) un-minified
+  - [huebee.min.css](https://unpkg.com/huebee@2/dist/huebee.min.css) minified, or
+  - [huebee.css](https://unpkg.com/huebee@2/dist/huebee.css) un-minified
 + JavaScript:
-  - [huebee.pkgd.min.js](https://unpkg.com/huebee@1/dist/huebee.pkgd.min.js) minified, or
-  - [huebee.pkgd.js](https://unpkg.com/huebee@1/dist/huebee.pkgd.js) un-minified
+  - [huebee.pkgd.min.js](https://unpkg.com/huebee@2/dist/huebee.pkgd.min.js) minified, or
+  - [huebee.pkgd.js](https://unpkg.com/huebee@2/dist/huebee.pkgd.js) un-minified
 
 ### CDN
 
 Link directly to Huebee files on [unpkg](https://unpkg.com).
 
 ``` html
-<link rel="stylesheet" href="https://unpkg.com/huebee@1/dist/huebee.min.css">
+<link rel="stylesheet" href="https://unpkg.com/huebee@2/dist/huebee.min.css">
 <!-- or -->
-<link rel="stylesheet" href="https://unpkg.com/huebee@1/dist/huebee.css">
+<link rel="stylesheet" href="https://unpkg.com/huebee@2/dist/huebee.css">
 ```
 
 ``` html
-<script src="https://unpkg.com/huebee@1/dist/huebee.pkgd.min.js"></script>
+<script src="https://unpkg.com/huebee@2/dist/huebee.pkgd.min.js"></script>
 <!-- or -->
-<script src="https://unpkg.com/huebee@1/dist/huebee.pkgd.js"></script>
+<script src="https://unpkg.com/huebee@2/dist/huebee.pkgd.js"></script>
 ```
 
 ### Package managers
@@ -36,18 +36,6 @@ Link directly to Huebee files on [unpkg](https://unpkg.com).
 Bower: `bower install huebee --save`
 
 npm: `npm install huebee --save`
-
-## License
-
-### Commercial license
-
-If you want to use Huebee to develop commercial sites, themes, projects, and applications, the Commercial license is the appropriate license. With this option, your source code is kept proprietary. Purchase a Huebee Commercial License at [huebee.buzz](http://huebee.buzz/#commercial-license)
-
-### Open source license
-
-If you are creating an open source application under a license compatible with the [GNU GPL license v3](https://www.gnu.org/licenses/gpl-3.0.html), you may use Huebee under the terms of the GPLv3.
-
-[Read more about Huebee's license](http://huebee.buzz/license.html).
 
 ## Usage
 
@@ -242,4 +230,6 @@ hueb.on( 'change', function( color, hue, sat, lum ) {
 
 ---
 
-By [Metafizzy](http://metafizzy.co)
+MIT License
+
+By [Metafizzy](https://metafizzy.co)

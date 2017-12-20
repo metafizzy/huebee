@@ -1,6 +1,6 @@
 {
   "name": "huebee",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "1-click color picker",
   "main": "huebee.js",
   "dependencies": {
@@ -34,7 +34,7 @@
     "dom"
   ],
   "author": "David DeSandro",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/metafizzy/huebee/issues"
   },
