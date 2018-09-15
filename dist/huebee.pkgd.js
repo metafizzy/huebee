@@ -958,6 +958,15 @@ function htmlInit() {
       }
       continue;
     }
+
+    //check if parsed strings are ints
+    for (var key in options) {
+      if (!isNaN(options[key])) {
+        options[key] = parseInt(options[key]);
+      } 
+    }
+
+
     // initialize
     new Huebee( elem, options );
   }
