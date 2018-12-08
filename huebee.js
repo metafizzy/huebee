@@ -340,10 +340,11 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+  var cursorOffsetWidth = this.options.cursorOffsetWidth || this.cursor.offsetWidth;
 
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderTopWidth, 10 );
-  this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder*2 );
-  this.canvasOffset = {
+  this.gridSize = Math.round( cursorOffsetWidth - this.cursorBorder*2 );
+  this.canvasOffset = this.options.canvasOffset || {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
   };
