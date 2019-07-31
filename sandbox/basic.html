@@ -86,6 +86,7 @@ var hueb = new Huebee( colorInput1, {
   className: 'huebee1',
   hue0: 200,
   setBGColor: true,
+  greyscale: false
 });
 var h1 = document.querySelector('h1');
 hueb.on( 'change', function( color ) {
@@ -98,7 +99,7 @@ new Huebee( document.querySelector('.color-input2'), {
   setBGColor: true,
   className: 'huebee2',
   notation: 'hex',
-})
+});
 
 new Huebee( document.querySelector('.color-button1'), {
   setBGColor: '.color-button1-bg',

@@ -60,6 +60,7 @@ Huebee.defaults = {
   notation: 'shortHex',
   setText: true,
   setBGColor: true,
+  greyscale: true
 };
 
 var proto = Huebee.prototype = Object.create( EvEmitter.prototype );
@@ -199,6 +200,7 @@ proto.updateColors = function() {
   var sats = this.options.saturations;
   var hues = this.options.hues;
   var customColors = this.options.customColors;
+  var greyscale = this.options.greyscale;
 
   // render custom colors
   if ( customColors && customColors.length ) {
@@ -221,12 +223,15 @@ proto.updateColors = function() {
     this.updateSaturationGrid( i, sat, yOffset );
   }
 
-  // render grays
-  for ( i=0; i < shades+2; i++ ) {
-    var lum = 1 - i/(shades+1);
-    var color = this.colorModer( 0, 0, lum );
-    var swatch = getSwatch( color );
-    this.addSwatch( swatch, hues+1, i );
+  // if option enabled
+  if (greyscale) {
+    // render grays
+    for ( i=0; i < shades+2; i++ ) {
+      var lum = 1 - i/(shades+1);
+      var color = this.colorModer( 0, 0, lum );
+      var swatch = getSwatch( color );
+      this.addSwatch( swatch, hues+1, i );
+    }
   }
 };
 
@@ -340,6 +345,7 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+  var greyscale = this.options.greyscale;
 
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderTopWidth, 10 );
   this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder*2 );
@@ -349,6 +355,10 @@ proto.updateSizes = function() {
   };
   var height = Math.max( shades*sats + this.satY, shades+2 );
   var width = this.gridSize * (hues+2);
+  if (!greyscale) {
+    width = this.gridSize * (hues);
+    height = Math.max( shades*sats + this.satY, shades);
+  }
   this.canvas.width = width * 2;
   this.canvas.style.width = width + 'px';
   this.canvas.height = this.gridSize * height * 2;
