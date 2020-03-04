@@ -44,6 +44,8 @@ function Huebee( anchor, options ) {
     throw 'Bad element for Huebee: ' + anchor;
   }
   this.anchor = anchor;
+  this.color = null;
+  this.canvasPointer = null;
   // options
   this.options = {};
   this.option( Huebee.defaults );
@@ -442,11 +444,27 @@ proto.canvasPointerChange = function( pointer ) {
   this.setSwatch( swatch );
 };
 
+proto.hideCursor = function() {
+  if(!this.cursor) {
+    return;
+  }
+
+  this.cursor.classList.add('is-hidden');
+};
+
 // ----- select ----- //
 
 proto.setColor = function( color ) {
   var swatch = getSwatch( color );
   this.setSwatch( swatch );
+};
+
+proto.resetColor = function() {
+  this.color = null;
+  // set texts & backgrounds
+  this.setTexts();
+  this.setBackgrounds();
+  this.hideCursor();
 };
 
 proto.setSwatch = function( swatch ) {
