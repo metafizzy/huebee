@@ -2,7 +2,7 @@
 
 🐝 _1-click color picker_
 
-See [huebee.buzz](http://huebee.buzz) for complete docs and demos.
+See [huebee.buzz](https://huebee.buzz) for complete docs and demos.
 
 ## Install
 

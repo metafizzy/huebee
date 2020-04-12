@@ -24,4 +24,4 @@ QUnit.test( 'input', function( assert ) {
   hueb3.setColor('#08F');
   assert.notOk( hueb3.isLight, '#08F blue is dark' );
 
-});
+} );

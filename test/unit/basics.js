@@ -4,7 +4,7 @@ QUnit.test( 'basics', function( assert ) {
     hues: 6,
     saturations: 2,
     setBGColor: true,
-  });
+  } );
   var elem = document.querySelector('.basics');
 
   assert.ok( hueb, 'new Huebee returns object' );
@@ -16,12 +16,12 @@ QUnit.test( 'basics', function( assert ) {
 
   // fake select red
   hueb.once( 'change', function( color, hue, sat, lum ) {
-    assert.ok( true, 'change event triggered');
+    assert.ok( true, 'change event triggered' );
     assert.equal( color, '#F00', 'change event #F00 red swatch selected' );
     assert.equal( hue, 0, 'change event hue' );
     assert.equal( sat, 1, 'change event sat' );
     assert.equal( lum, 0.5, 'change event lum' );
-  });
+  } );
 
   hueb.fakeSelect( 0, 2 );
 
@@ -30,34 +30,37 @@ QUnit.test( 'basics', function( assert ) {
   assert.equal( hueb.sat, 1, 'sat' );
   assert.equal( hueb.lum, 0.5, 'lum' );
   assert.equal( elem.textContent, '#F00', 'element text set' );
-  assert.equal( elem.style.backgroundColor, 'rgb(255, 0, 0)', 'element background color set' );
+  assert.equal( elem.style.backgroundColor, 'rgb(255, 0, 0)',
+      'element background color set' );
 
   // fake select middle gray
   hueb.once( 'change', function( color, hue, sat, lum ) {
-    assert.ok( true, 'change event triggered');
+    assert.ok( true, 'change event triggered' );
     assert.equal( color, '#888', 'change event #888 gray swatch selected' );
     assert.equal( sat, 0, 'change event sat' );
-    assert.ok( Math.abs( lum - 0.5 ) <= 1/30 , 'change event lum' );
-  });
+    assert.ok( Math.abs( lum - 0.5 ) <= 1/30, 'change event lum' );
+  } );
 
   hueb.fakeSelect( 7, 3 );
 
   assert.equal( hueb.color, '#888', '#888 gray swatch selected' );
   assert.equal( hueb.sat, 0, 'sat' );
-  assert.ok( Math.abs( hueb.lum - 0.5 ) <= 1/30 , 'lum' );
+  assert.ok( Math.abs( hueb.lum - 0.5 ) <= 1/30, 'lum' );
   assert.equal( elem.textContent, '#888', 'element text set' );
-  assert.equal( elem.style.backgroundColor, 'rgb(136, 136, 136)', 'element background color set' );
+  assert.equal( elem.style.backgroundColor, 'rgb(136, 136, 136)',
+      'element background color set' );
 
   // setColor
   hueb.setColor('#c25');
   assert.equal( hueb.color, '#c25', 'setColor() sets color' );
   assert.equal( elem.textContent, '#c25', 'setColor() element text set' );
   hueb.setColor('foobar');
-  assert.equal( hueb.color, '#c25', 'setColor() with invalid color does not set invalid color' );
+  assert.equal( hueb.color, '#c25',
+      'setColor() with invalid color does not set invalid color' );
   assert.equal( elem.textContent, '#c25', 'setColor() element text set' );
 
   hueb.close();
 
   assert.notOk( document.body.contains( hueb.element ), 'element removed after close' );
 
-});
+} );

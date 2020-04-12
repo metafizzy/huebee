@@ -3,7 +3,7 @@ QUnit.test( 'staticOpen', function( assert ) {
   var hueb = new Huebee( input, {
     staticOpen: true,
     className: 'static-open-tester',
-  });
+  } );
 
   assert.ok( document.body.contains( hueb.element ), 'huebee in document' );
   input.blur();
@@ -11,6 +11,7 @@ QUnit.test( 'staticOpen', function( assert ) {
   hueb.close();
   assert.notOk( document.body.contains( hueb.element ), 'huebee removed after close()' );
   hueb.open();
-  assert.ok( document.body.contains( hueb.element ), 'huebee back in document after open()' );
+  assert.ok( document.body.contains( hueb.element ),
+      'huebee back in document after open()' );
 
-});
+} );

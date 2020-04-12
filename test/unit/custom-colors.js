@@ -8,9 +8,9 @@ QUnit.test( 'custom colors', function( assert ) {
     customColors: [
       'pink', 'foobar', 'darkgray', '#19F',
       '#F80', 'red', 'orange',
-      'lightblue'
+      'lightblue',
     ],
-  });
+  } );
 
   assert.equal( hueb.getColorCount(), 6 * 2 * 3 + 5 + 7, 'custom colors added' );
   assert.ok( hueb.colorGrid.DARKGRAY, 'darkgray color added' );
@@ -23,4 +23,4 @@ QUnit.test( 'custom colors', function( assert ) {
 
   hueb.close();
 
-});
+} );

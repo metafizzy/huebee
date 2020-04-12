@@ -9,7 +9,8 @@ QUnit.test( 'html start', function( assert ) {
   assert.equal( hueb.options.setBGColor, true, 'setBGColor option set' );
 
   input.focus();
-  assert.ok( document.body.contains( hueb.element ), 'focus opens, huebee element present' );
+  assert.ok( document.body.contains( hueb.element ),
+      'focus opens, huebee element present' );
   // select yellow
   hueb.fakeSelect( 2, 1 );
   assert.equal( hueb.color, '#FF0', '#FF0 fake selected' );
@@ -17,4 +18,4 @@ QUnit.test( 'html start', function( assert ) {
 
   input.blur();
 
-});
+} );
