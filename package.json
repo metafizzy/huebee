@@ -7,7 +7,7 @@
     "test": "npm run lint",
     "lint": "npx eslint . && node bin/lint-json.js",
     "lintFix": "npx eslint . --fix",
-    "dist": "npm run bundle && npm run uglify",
+    "dist": "rm -rf dist/ && mkdir -p dist && npm run bundle && npm run uglify && cp huebee.css dist/huebee.css",
     "bundle": "node bin/bundle.js",
     "uglify": "npx uglifyjs dist/huebee.pkgd.js -o dist/huebee.pkgd.min.js --mangle --comments /^!/",
     "version": "node bin/version && npm run dist && git add -A . dist"
