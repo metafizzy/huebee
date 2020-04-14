@@ -6,8 +6,7 @@
 
   <title>Huebee tests</title>
 
-  <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css" />
-  <link rel="stylesheet" href="../huebee.css" />
+  <link rel="stylesheet" href="../../huebee.css" />
 
   <style>
   /* HACK disable transition to open & close synchronously */
@@ -15,38 +14,30 @@
     transition: none;
   }
 
-  .css-huebee .huebee__cursor {
+  .huebee--css .huebee__cursor {
     width: 20px;
     height: 20px;
   }
 
-  .css-huebee.is-big .huebee__cursor {
+  .huebee--css.is-big .huebee__cursor {
     width: 30px;
     height: 30px;
   }
   </style>
 
-  <script src="../bower_components/qunit/qunit/qunit.js"></script>
-  <script src="../bower_components/ev-emitter/ev-emitter.js"></script>
-  <script src="../bower_components/unipointer/unipointer.js"></script>
-  <script src="../huebee.js"></script>
+  <script src="../../node_modules/ev-emitter/ev-emitter.js"></script>
+  <script src="../../node_modules/unipointer/unipointer.js"></script>
+  <script src="../../huebee.js"></script>
   <script src="helpers.js"></script>
 
-  <script src="unit/basics.js"></script>
-  <script src="unit/input.js"></script>
-  <script src="unit/set-multiples.js"></script>
-  <script src="unit/custom-colors.js"></script>
-  <script src="unit/css.js"></script>
+  <!-- 
   <script src="unit/static-open.js"></script>
-  <script src="unit/html-init.js"></script>
+  <script src="unit/html-init.js"></script> -->
 
 </head>
 <body>
 
-
   <h1>Huebee tests</h1>
-
-  <div id="qunit"></div>
 
   <h2>basics</h2>
 
