@@ -4,7 +4,7 @@
   "description": "1-click color picker",
   "main": "huebee.js",
   "scripts": {
-    "test": "npm run lint && echo \"View test/ in browser\"",
+    "test": "npm run lint",
     "lint": "npx eslint . && node bin/lint-json.js",
     "lintFix": "npx eslint . --fix",
     "dist": "npm run bundle && npm run uglify",
