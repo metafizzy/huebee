@@ -21,21 +21,17 @@ Link directly to Huebee files on [unpkg](https://unpkg.com).
 
 ``` html
 <link rel="stylesheet" href="https://unpkg.com/huebee@2/dist/huebee.min.css">
-<!-- or -->
-<link rel="stylesheet" href="https://unpkg.com/huebee@2/dist/huebee.css">
 ```
 
 ``` html
 <script src="https://unpkg.com/huebee@2/dist/huebee.pkgd.min.js"></script>
-<!-- or -->
-<script src="https://unpkg.com/huebee@2/dist/huebee.pkgd.js"></script>
 ```
 
 ### Package managers
 
-Bower: `bower install huebee --save`
-
 npm: `npm install huebee --save`
+
+Bower: `bower install huebee --save`
 
 ## Usage
 
@@ -96,6 +92,7 @@ var hueb = new Huebee( '.color-input', {
 
   shades: 7,
   // number of shades of colors and shades of gray between white and black
+  // set to 0 to use only custom colors
   // default: 5
 
   saturations: 2,

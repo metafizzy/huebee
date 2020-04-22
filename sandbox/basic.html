@@ -42,17 +42,26 @@ body, input {
   font-size: 12px;
   border: 1px solid #CCC;
 }
+
+.huebee--custom-only .huebee__cursor {
+  width: 30px;
+  height: 30px;
+}
+
 </style>
 
 </head>
 <body>
 
-  <h1>basic</h1>
+<h1>basic</h1>
 
 <p>
   <input class="color-input1" />
   <input class="color-input2" value="#0000FF" />
 </p>
+
+
+<h2>set multiples</h2>
 
 <p>
   <button class="color-button color-button1 color-button1-bg"></button>
@@ -62,16 +71,26 @@ body, input {
 </p>
 
 
+<h2>setBGColor</h2>
+
 <div>
   <p data-huebee='{ "setBGColor": true }'>Color me</p>
 </div>
+
+<h2>staticOpen</h2>
 
 <p>
   <input data-huebee='{ "staticOpen": true, "setBGColor": true }' value="#F08" />
 </p>
 
-<script src="../bower_components/ev-emitter/ev-emitter.js"></script>
-<script src="../bower_components/unipointer/unipointer.js"></script>
+<h2>custom colors only</h2>
+
+<p>
+  <input class="input--custom-only" />
+</p>
+
+<script src="../node_modules/ev-emitter/ev-emitter.js"></script>
+<script src="../node_modules/unipointer/unipointer.js"></script>
 <script src="../huebee.js"></script>
 
 <script>
@@ -103,7 +122,15 @@ new Huebee( document.querySelector('.color-input2'), {
 new Huebee( document.querySelector('.color-button1'), {
   setBGColor: '.color-button1-bg',
   setText: '.color-button1-bg',
-})
+});
+
+new Huebee( '.input--custom-only', {
+  className: 'huebee--custom-only',
+  shades: 0,
+  hues: 4,
+  staticOpen: true,
+  customColors: [ '#C25', '#E62', '#EA0', '#19F', '#333', '#6C8', '#359', '#FD3' ]
+});
 </script>
 
 </body>

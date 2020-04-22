@@ -132,12 +132,9 @@ proto.create = function() {
     }
   }
 
-  // satY
-  var hues = this.options.hues;
-  var customColors = this.options.customColors;
-  var customLength = customColors && customColors.length;
-  // y position where saturation grid starts
-  this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
+  // satY, y position where saturation grid starts
+  var customLength = this.getCustomLength();
+  this.satY = customLength ? Math.ceil( customLength / this.options.hues ) + 1 : 0;
   // colors
   this.updateColors();
   this.setAnchorColor();
@@ -152,6 +149,11 @@ proto.getSetElems = function( option ) {
   } else if ( typeof option == 'string' ) {
     return document.querySelectorAll( option );
   }
+};
+
+proto.getCustomLength = function() {
+  var customColors = this.options.customColors;
+  return customColors && customColors.length || 0;
 };
 
 proto.createCanvas = function() {
@@ -197,12 +199,11 @@ proto.updateColors = function() {
   var shades = this.options.shades;
   var sats = this.options.saturations;
   var hues = this.options.hues;
-  var customColors = this.options.customColors;
 
   // render custom colors
-  if ( customColors && customColors.length ) {
+  if ( this.getCustomLength() ) {
     var customI = 0;
-    customColors.forEach( function( color ) {
+    this.options.customColors.forEach( function( color ) {
       var x = customI % hues;
       var y = Math.floor( customI/hues );
       var swatch = getSwatch( color );
@@ -222,12 +223,18 @@ proto.updateColors = function() {
   }
 
   // render grays
-  for ( i = 0; i < shades + 2; i++ ) {
+  var grayCount = this.getGrayCount();
+  for ( i = 0; i < grayCount; i++ ) {
     var lum = 1 - i / ( shades + 1 );
     var color = this.colorModer( 0, 0, lum );
     var swatch = getSwatch( color );
     this.addSwatch( swatch, hues + 1, i );
   }
+};
+
+// get shades + black & white; else 0
+proto.getGrayCount = function() {
+  return this.options.shades ? this.options.shades + 2 : 0;
 };
 
 proto.updateSaturationGrid = function( i, sat, yOffset ) {
@@ -341,6 +348,8 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+  var grayCount = this.getGrayCount();
+  var customLength = this.getCustomLength();
 
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderTopWidth, 10 );
   this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder * 2 );
@@ -348,11 +357,18 @@ proto.updateSizes = function() {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
   };
-  var height = Math.max( shades * sats + this.satY, shades + 2 );
-  var width = this.gridSize * ( hues + 2 );
-  this.canvas.width = width * 2;
-  this.canvas.style.width = width + 'px';
-  this.canvas.height = this.gridSize * height * 2;
+  var cols, rows;
+  if ( customLength && !grayCount ) {
+    // custom colors only
+    cols = Math.min( customLength, hues );
+    rows = Math.ceil( customLength/hues );
+  } else {
+    cols = hues + 2;
+    rows = Math.max( shades * sats + this.satY, grayCount );
+  }
+  var width = this.canvas.width = cols * this.gridSize * 2;
+  this.canvas.height = rows * this.gridSize * 2;
+  this.canvas.style.width = width/2 + 'px';
 };
 
 // close if target is not anchor or element
