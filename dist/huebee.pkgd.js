@@ -1,5 +1,13 @@
+/*!
+ * Huebee PACKAGED v2.1.0
+ * 1-click color picker
+ * MIT license
+ * https://huebee.buzz
+ * Copyright 2020 Metafizzy
+ */
+
 /**
- * EvEmitter v1.0.3
+ * EvEmitter v1.1.0
  * Lil' event emitter
  * MIT License
  */
@@ -79,13 +87,14 @@ proto.emitEvent = function( eventName, args ) {
   if ( !listeners || !listeners.length ) {
     return;
   }
-  var i = 0;
-  var listener = listeners[i];
+  // copy over to avoid interference if .off() in listener
+  listeners = listeners.slice(0);
   args = args || [];
   // once stuff
   var onceListeners = this._onceEvents && this._onceEvents[ eventName ];
 
-  while ( listener ) {
+  for ( var i=0; i < listeners.length; i++ ) {
+    var listener = listeners[i]
     var isOnce = onceListeners && onceListeners[ listener ];
     if ( isOnce ) {
       // remove listener
@@ -96,19 +105,21 @@ proto.emitEvent = function( eventName, args ) {
     }
     // trigger listener
     listener.apply( this, args );
-    // get next listener
-    i += isOnce ? 0 : 1;
-    listener = listeners[i];
   }
 
   return this;
+};
+
+proto.allOff = function() {
+  delete this._events;
+  delete this._onceEvents;
 };
 
 return EvEmitter;
 
 }));
 /*!
- * Unipointer v2.1.0
+ * Unipointer v2.3.0
  * base class for doing one thing with pointer event
  * MIT license
  */
@@ -159,25 +170,24 @@ proto.unbindStartEvent = function( elem ) {
 };
 
 /**
- * works as unbinder, as you can ._bindStart( false ) to unbind
- * @param {Boolean} isBind - will unbind if falsey
+ * Add or remove start event
+ * @param {Boolean} isAdd - remove if falsey
  */
-proto._bindStartEvent = function( elem, isBind ) {
-  // munge isBind, default to true
-  isBind = isBind === undefined ? true : !!isBind;
-  var bindMethod = isBind ? 'addEventListener' : 'removeEventListener';
+proto._bindStartEvent = function( elem, isAdd ) {
+  // munge isAdd, default to true
+  isAdd = isAdd === undefined ? true : isAdd;
+  var bindMethod = isAdd ? 'addEventListener' : 'removeEventListener';
 
-  if ( window.navigator.pointerEnabled ) {
-    // W3C Pointer Events, IE11. See https://coderwall.com/p/mfreca
-    elem[ bindMethod ]( 'pointerdown', this );
-  } else if ( window.navigator.msPointerEnabled ) {
-    // IE10 Pointer Events
-    elem[ bindMethod ]( 'MSPointerDown', this );
-  } else {
-    // listen for both, for devices like Chrome Pixel
-    elem[ bindMethod ]( 'mousedown', this );
-    elem[ bindMethod ]( 'touchstart', this );
+  // default to mouse events
+  var startEvent = 'mousedown';
+  if ( window.PointerEvent ) {
+    // Pointer Events
+    startEvent = 'pointerdown';
+  } else if ( 'ontouchstart' in window ) {
+    // Touch Events. iOS Safari
+    startEvent = 'touchstart';
   }
+  elem[ bindMethod ]( startEvent, this );
 };
 
 // trigger handler methods for events
@@ -213,7 +223,6 @@ proto.ontouchstart = function( event ) {
   this._pointerDown( event, event.changedTouches[0] );
 };
 
-proto.onMSPointerDown =
 proto.onpointerdown = function( event ) {
   this._pointerDown( event, event );
 };
@@ -224,8 +233,9 @@ proto.onpointerdown = function( event ) {
  * @param {Event or Touch} pointer
  */
 proto._pointerDown = function( event, pointer ) {
-  // dismiss other pointers
-  if ( this.isPointerDown ) {
+  // dismiss right click and other pointers
+  // button = 0 is okay, 1-4 not
+  if ( event.button || this.isPointerDown ) {
     return;
   }
 
@@ -248,7 +258,6 @@ var postStartEvents = {
   mousedown: [ 'mousemove', 'mouseup' ],
   touchstart: [ 'touchmove', 'touchend', 'touchcancel' ],
   pointerdown: [ 'pointermove', 'pointerup', 'pointercancel' ],
-  MSPointerDown: [ 'MSPointerMove', 'MSPointerUp', 'MSPointerCancel' ]
 };
 
 proto._bindPostStartEvents = function( event ) {
@@ -283,7 +292,6 @@ proto.onmousemove = function( event ) {
   this._pointerMove( event, event );
 };
 
-proto.onMSPointerMove =
 proto.onpointermove = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerMove( event, event );
@@ -319,7 +327,6 @@ proto.onmouseup = function( event ) {
   this._pointerUp( event, event );
 };
 
-proto.onMSPointerUp =
 proto.onpointerup = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerUp( event, event );
@@ -353,19 +360,21 @@ proto.pointerUp = function( event, pointer ) {
 
 // triggered on pointer up & pointer cancel
 proto._pointerDone = function() {
+  this._pointerReset();
+  this._unbindPostStartEvents();
+  this.pointerDone();
+};
+
+proto._pointerReset = function() {
   // reset properties
   this.isPointerDown = false;
   delete this.pointerIdentifier;
-  // remove events
-  this._unbindPostStartEvents();
-  this.pointerDone();
 };
 
 proto.pointerDone = noop;
 
 // ----- pointer cancel ----- //
 
-proto.onMSPointerCancel =
 proto.onpointercancel = function( event ) {
   if ( event.pointerId == this.pointerIdentifier ) {
     this._pointerCancel( event, event );
@@ -410,8 +419,8 @@ Unipointer.getPointerPoint = function( pointer ) {
 return Unipointer;
 
 }));
-/**
- * Huebee v2.0.0
+/*!
+ * Huebee v2.1.0
  * 1-click color picker
  * MIT license
  * https://huebee.buzz
@@ -544,12 +553,9 @@ proto.create = function() {
     }
   }
 
-  // satY
-  var hues = this.options.hues;
-  var customColors = this.options.customColors;
-  var customLength = customColors && customColors.length;
-  // y position where saturation grid starts
-  this.satY = customLength ? Math.ceil( customLength/hues ) + 1 : 0;
+  // satY, y position where saturation grid starts
+  var customLength = this.getCustomLength();
+  this.satY = customLength ? Math.ceil( customLength / this.options.hues ) + 1 : 0;
   // colors
   this.updateColors();
   this.setAnchorColor();
@@ -564,6 +570,11 @@ proto.getSetElems = function( option ) {
   } else if ( typeof option == 'string' ) {
     return document.querySelectorAll( option );
   }
+};
+
+proto.getCustomLength = function() {
+  var customColors = this.options.customColors;
+  return customColors && customColors.length || 0;
 };
 
 proto.createCanvas = function() {
@@ -609,12 +620,11 @@ proto.updateColors = function() {
   var shades = this.options.shades;
   var sats = this.options.saturations;
   var hues = this.options.hues;
-  var customColors = this.options.customColors;
 
   // render custom colors
-  if ( customColors && customColors.length ) {
+  if ( this.getCustomLength() ) {
     var customI = 0;
-    customColors.forEach( function( color ) {
+    this.options.customColors.forEach( function( color ) {
       var x = customI % hues;
       var y = Math.floor( customI/hues );
       var swatch = getSwatch( color );
@@ -634,12 +644,18 @@ proto.updateColors = function() {
   }
 
   // render grays
-  for ( i = 0; i < shades + 2; i++ ) {
+  var grayCount = this.getGrayCount();
+  for ( i = 0; i < grayCount; i++ ) {
     var lum = 1 - i / ( shades + 1 );
     var color = this.colorModer( 0, 0, lum );
     var swatch = getSwatch( color );
     this.addSwatch( swatch, hues + 1, i );
   }
+};
+
+// get shades + black & white; else 0
+proto.getGrayCount = function() {
+  return this.options.shades ? this.options.shades + 2 : 0;
 };
 
 proto.updateSaturationGrid = function( i, sat, yOffset ) {
@@ -753,6 +769,8 @@ proto.updateSizes = function() {
   var hues = this.options.hues;
   var shades = this.options.shades;
   var sats = this.options.saturations;
+  var grayCount = this.getGrayCount();
+  var customLength = this.getCustomLength();
 
   this.cursorBorder = parseInt( getComputedStyle( this.cursor ).borderTopWidth, 10 );
   this.gridSize = Math.round( this.cursor.offsetWidth - this.cursorBorder * 2 );
@@ -760,11 +778,18 @@ proto.updateSizes = function() {
     x: this.canvas.offsetLeft,
     y: this.canvas.offsetTop,
   };
-  var height = Math.max( shades * sats + this.satY, shades + 2 );
-  var width = this.gridSize * ( hues + 2 );
-  this.canvas.width = width * 2;
-  this.canvas.style.width = width + 'px';
-  this.canvas.height = this.gridSize * height * 2;
+  var cols, rows;
+  if ( customLength && !grayCount ) {
+    // custom colors only
+    cols = Math.min( customLength, hues );
+    rows = Math.ceil( customLength/hues );
+  } else {
+    cols = hues + 2;
+    rows = Math.max( shades * sats + this.satY, grayCount );
+  }
+  var width = this.canvas.width = cols * this.gridSize * 2;
+  this.canvas.height = rows * this.gridSize * 2;
+  this.canvas.style.width = width/2 + 'px';
 };
 
 // close if target is not anchor or element

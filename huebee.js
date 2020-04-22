@@ -1,5 +1,5 @@
 /*!
- * Huebee v2.0.0
+ * Huebee v2.1.0
  * 1-click color picker
  * MIT license
  * https://huebee.buzz
