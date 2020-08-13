@@ -576,11 +576,21 @@ Huebee.data = function( elem ) {
 // -------------------------- getSwatch -------------------------- //
 
 // proxy canvas used to check colors
-var proxyCanvas = document.createElement('canvas');
-proxyCanvas.width = proxyCanvas.height = 1;
-var proxyCtx = proxyCanvas.getContext('2d');
+var proxyCtx;
+
+function initProxyCtxIfNeeded() {
+  // return early when proxy canvas is already initialized.
+  if ( proxyCtx ) {
+    return;
+  }
+
+  var proxyCanvas = document.createElement('canvas');
+  proxyCanvas.width = proxyCanvas.height = 1;
+  proxyCtx = proxyCanvas.getContext('2d');
+}
 
 function getSwatch( color ) {
+  initProxyCtxIfNeeded();
   // check that color value is valid
   proxyCtx.clearRect( 0, 0, 1, 1 );
   proxyCtx.fillStyle = '#010203'; // reset value
