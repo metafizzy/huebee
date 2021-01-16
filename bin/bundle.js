@@ -24,7 +24,7 @@ banner = banner.replace( 'Huebee', 'Huebee PACKAGED' );
 
 const pkgdJsFile = dir('../dist/huebee.pkgd.js');
 // TODO use process.stdin, rather than writing/reading files
-execSync( `cat ${jsFiles.join(' ')} > ${pkgdJsFile}` );
+execSync(`cat ${jsFiles.join(' ')} > ${pkgdJsFile}`);
 let pkgdJsSrc = fs.readFileSync( pkgdJsFile, 'utf8' );
 // shim-in RequireJS definitions; requireJS task could do this but *eye roll*
 let replaceDefineCount = 0;

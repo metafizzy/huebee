@@ -14,12 +14,8 @@ module.exports = async function( page ) {
 
     return {
       length: items.length,
-      textContents: items.map( ( item ) => {
-        return item.textContent;
-      } ),
-      backgroundColors: items.map( ( item ) => {
-        return item.style.backgroundColor;
-      } ),
+      textContents: items.map( ( item ) => item.textContent ),
+      backgroundColors: items.map( ( item ) => item.style.backgroundColor ),
     };
   } );
 

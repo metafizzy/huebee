@@ -5,13 +5,13 @@ const getServer = require('../bin/get-server.js');
 const port = 9000;
 let server = getServer();
 server.listen( port );
-console.log( `Server listening on port ${port}` );
+console.log(`Server listening on port ${port}`);
 
 ( async function() {
   let browser = await puppeteer.launch();
   let page = await browser.newPage();
 
-  await page.goto( `http://localhost:${port}/test/site/index.html` );
+  await page.goto(`http://localhost:${port}/test/site/index.html`);
 
   await require('./basics.js')( page );
   await require('./input.js')( page );
