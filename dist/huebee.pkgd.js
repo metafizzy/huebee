@@ -1,5 +1,5 @@
 /*!
- * Huebee PACKAGED v2.1.0
+ * Huebee PACKAGED v2.1.1
  * 1-click color picker
  * MIT license
  * https://huebee.buzz
@@ -420,7 +420,7 @@ return Unipointer;
 
 }));
 /*!
- * Huebee v2.1.0
+ * Huebee v2.1.1
  * 1-click color picker
  * MIT license
  * https://huebee.buzz
@@ -996,12 +996,15 @@ Huebee.data = function( elem ) {
 
 // -------------------------- getSwatch -------------------------- //
 
-// proxy canvas used to check colors
-var proxyCanvas = document.createElement('canvas');
-proxyCanvas.width = proxyCanvas.height = 1;
-var proxyCtx = proxyCanvas.getContext('2d');
+var proxyCtx;
 
 function getSwatch( color ) {
+  if ( !proxyCtx ) {
+    // init proxyCtx when needed. #27
+    var proxyCanvas = document.createElement('canvas');
+    proxyCanvas.width = proxyCanvas.height = 1;
+    proxyCtx = proxyCanvas.getContext('2d');
+  }
   // check that color value is valid
   proxyCtx.clearRect( 0, 0, 1, 1 );
   proxyCtx.fillStyle = '#010203'; // reset value
